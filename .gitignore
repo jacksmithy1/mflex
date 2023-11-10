@@ -1,0 +1,8 @@
+.venv
+.vscode
+__pycache__/
+*.npy
+*.fits
+.DS_Store
+*.pages
+tests/
