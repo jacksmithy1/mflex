@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 from simulate.simulate_boundary import dipole, non_periodic, dalmatian
 import numpy as np
 from model.field.bfield_model import magnetic_field, bz_partial_derivatives

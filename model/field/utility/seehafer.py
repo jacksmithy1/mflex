@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 import numpy as np
 
 
@@ -10,6 +12,12 @@ def mirror_magnetogram(
     nresol_x: int,
     nresol_y: int,
 ) -> np.ndarray[np.float64, np.dtype[np.float64]]:
+    """
+    Given the photospheric magnetic field data_bz,
+    returns Seehafer-mirrored Bz field vector.
+    Four times the size of original photospheric Bz vector.
+    """
+
     b_arr: np.ndarray[np.float64, np.dtype[np.float64]] = np.zeros(
         (2 * nresol_y, 2 * nresol_x)
     )  # [0:2*nresol_y,0:2*nresol_x]

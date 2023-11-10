@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 import numpy as np
 from model.field.utility.height_profile import f, dfdz
 
@@ -110,6 +112,10 @@ def deltapres(
     b: float,
     bz: np.float64,
 ) -> np.float64:
+    """
+    Returns variation of pressure with height z at given x and y.
+    """
+
     return -f(z, z0, deltaz, a, b) * bz**2.0 / (8.0**np.pi)
 
 
@@ -123,6 +129,10 @@ def deltaden(
     bzdotgradbz: np.float64,
     g: float,
 ) -> np.float64:
+    """
+    Returns variation of density with height z at given x and y.
+    """
+
     return (
         dfdz(z, z0, deltaz, a, b) * bz**2.0 / 2.0
         + f(z, z0, deltaz, a, b) * bzdotgradbz

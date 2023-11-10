@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 from load.read_file import read_issi_analytical
 import numpy as np
 from plot.plot_magnetogram import (

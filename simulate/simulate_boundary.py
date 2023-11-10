@@ -1,7 +1,14 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 import numpy as np
 
 
-def dipole(x: np.float64, y: np.float64):
+def dipole(x: np.float64, y: np.float64) -> np.float64:
+    """
+    Returns value of Dipole-VonMises distribution at given x and y
+    inspired by Neukirch and Wiegelmann (2019).
+    """
+
     xx: np.float64 = np.pi * (x - 1.0)
     yy: np.float64 = np.pi * (y - 1.0)
     mu_x: float = 1.0
@@ -26,7 +33,12 @@ def dipole(x: np.float64, y: np.float64):
     )
 
 
-def non_periodic(x: np.float64, y: np.float64):
+def non_periodic(x: np.float64, y: np.float64) -> np.float64:
+    """
+    Returns value of Non-periodic-VonMises distribution at given x and y
+    inspired by Neukirch and Wiegelmann (2019).
+    """
+
     xx: np.float64 = np.pi * (x - 1.0)
     yy: np.float64 = np.pi * (y - 1.0)
     mu_x: float = 1.0
@@ -56,7 +68,12 @@ def non_periodic(x: np.float64, y: np.float64):
     )
 
 
-def dalmatian(x: np.float64, y: np.float64):
+def dalmatian(x: np.float64, y: np.float64) -> np.float64:
+    """
+    Returns value of Multipole-VonMises distribution at given x and y
+    inspired by Neukirch and Wiegelmann (2019).
+    """
+
     xx: np.float64 = np.pi * (x - 1.0)
     yy: np.float64 = np.pi * (y - 1.0)
     mu_x: float = 1.0

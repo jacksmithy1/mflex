@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 import matplotlib.pyplot as plt
 import numpy as np
 from plot.linetracer.fieldline3D import fieldline3d
@@ -9,6 +11,10 @@ from typing import List
 def plot_magnetogram_boundary(
     data_bz: np.ndarray[np.float64, np.dtype[np.float64]], nresol_x: int, nresol_y: int
 ) -> None:
+    """
+    Returns 2D plot of photospheric magnetic field at z=0.
+    """
+
     x_arr: np.ndarray[np.float64, np.dtype[np.float64]] = (
         np.arange(nresol_x) * (nresol_x) / (nresol_x - 1)
     )
@@ -41,6 +47,10 @@ def plot_magnetogram_boundary_3D(
     zmin: np.float64,
     zmax: np.float64,
 ) -> None:
+    """
+    Returns 3D plot of photospheric magnetic field excluding field line extrapolation.
+    """
+
     x_arr: np.ndarray[np.float64, np.dtype[np.float64]] = (
         np.arange(2 * nresol_x) * (xmax - xmin) / (2 * nresol_x - 1) + xmin
     )
@@ -88,6 +98,10 @@ def plot_fieldlines_grid(
     alpha: float,
     nf_max: float,
 ):
+    """
+    Returns 3D plot of photospheric magnetic field including field line extrapolation.
+    """
+
     data_bz: np.ndarray[np.float64, np.dtype[np.float64]] = data_b[:, :, 0, 2]
     x_arr: np.ndarray[np.float64, np.dtype[np.float64]] = (
         np.arange(2 * nresol_x) * (xmax - xmin) / (2 * nresol_x - 1) + xmin

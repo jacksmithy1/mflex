@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 import numpy as np
 from model.field.utility.seehafer import mirror_magnetogram
 from model.field.utility.fft import fft_coeff_seehafer
@@ -25,6 +27,12 @@ def magnetic_field(
     nf_max: int,
     ffunc: str = "Neukirch",
 ) -> np.ndarray[np.float64, np.dtype[np.float64]]:
+    """
+    Given the Seehafer-mirrored photospheric magnetic field data_bz,
+    returns 3D magnetic field vector [By, Bx, Bz] calculated from
+    series expansion using anm, phi and dphidz.
+    """
+
     length_scale: np.float64 = np.float64(2.0)  # Normalising length scale for Seehafer
     length_scale_x: np.float64 = 2.0 * nresol_x * pixelsize_x
     # Length scale in x direction for Seehafer
@@ -222,6 +230,13 @@ def bz_partial_derivatives(
     nf_max: int,
     ffunc: str = "Neukirch",
 ) -> np.ndarray[np.float64, np.dtype[np.float64]]:
+    """
+    Given the Seehafer-mirrored photospheric magnetic field data_bz,
+    returns partial derivatives of magnetic field vector z-component
+    [dBzdy, dBzdx, dBzdz] calculated from series expansion using anm,
+    phi and dphidz.
+    """
+
     length_scale: float = 2.0  # Normalising length scale for Seehafer
     length_scale_x: float = 2.0 * nresol_x * float(pixelsize_x)
     # Length scale in x direction for Seehafer

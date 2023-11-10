@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 from model.plasma_parameters import deltaden, deltapres
 import numpy as np
 import matplotlib.pyplot as plt
@@ -22,6 +24,11 @@ def plot_deltaparam(
     alpha: float,
     g: float,
 ) -> None:
+    """
+    Returns plot of variations in plasma parameters pressure and density
+    at [y,x] where photospheric magnetic field strength is maximal.
+    """
+
     b_back: np.ndarray[np.float64, np.dtype[np.float64]] = np.zeros(
         (nresol_y, nresol_x)
     )

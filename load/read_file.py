@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 import scipy
 import numpy as np
 import math
@@ -13,6 +15,11 @@ from classes.clsmod import Data3D, DataBz
 
 
 def read_issi_rmhd(path: str) -> Data3D:
+    """
+    Returns dataclass Data3D extracted from RMHD_boundary_data.sav
+    provided by ISSI Team.
+    """
+
     data = scipy.io.readsav(path, python_dict=True, verbose=True)
 
     data_bz: np.ndarray[np.float64, np.dtype[np.float64]] = data[
@@ -141,6 +148,11 @@ def read_issi_rmhd(path: str) -> Data3D:
 
 
 def read_issi_analytical(path: str) -> Data3D:
+    """
+    Returns dataclass Data3D extracted from Analytical_boundary_data.sav
+    provided by ISSI Team.
+    """
+
     data = scipy.io.readsav(path, python_dict=True, verbose=True)
     data_bz = data["b2dz5"]  # [0:nresol_y,0:nresol_x]
     # Y-axis size first as this corresponds to number of rows, then X-Axis size corresponding t number of columns
@@ -265,6 +277,11 @@ def read_issi_analytical(path: str) -> Data3D:
 
 
 def read_fits_soar(path: str, header: bool = False) -> DataBz:
+    """
+    Returns dataclass DataBz extracted from _blos.fits file
+    previously downloaded from Solar Orbiter Archive.
+    """
+
     with open(path) as data:
         # data.info()
         image: np.ndarray[np.float64, np.dtype[np.int64]] = getdata(path, ext=False)

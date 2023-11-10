@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 import numpy as np
 
 
@@ -8,8 +10,10 @@ def fft_coeff_seehafer(
     nresol_y: int,
     nf_max: int,
 ) -> np.ndarray[np.float64, np.dtype[np.float64]]:
-    # b_back is mirrored magnetogram
-    # shape(k2_arr) == shape(b_back) = [nresol_y, nresol_x]
+    """
+    Given the Seehafer-mirrored photospheric magnetic field data_bz,
+    returns coefficients anm for series expansion of 3D magnetic field.
+    """
 
     if data_bz.shape[0] != nresol_y or data_bz.shape[1] != nresol_x:
         print("Shape of magnetogram does not match nresol_y x nresol_x]")
@@ -31,8 +35,14 @@ def fft_coeff_seehafer(
             temp: np.float64 = signal[iy, ix]
             signal[iy, ix] = -temp
 
-    centre_x: int = int(nresol_x / 2)
-    centre_y: int = int(nresol_y / 2)
+    if nresol_x % 2 == 0:
+        centre_x: int = int(nresol_x / 2)
+    else:
+        centre_x: int = int((nresol_x + 1) / 2)
+    if nresol_y % 2 == 0:
+        centre_y: int = int(nresol_y / 2)
+    else:
+        centre_y: int = int((nresol_y + 1) / 2)
 
     for ix in range(1, nf_max):
         for iy in range(1, nf_max):

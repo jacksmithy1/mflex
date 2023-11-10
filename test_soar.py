@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 from load.read_file import read_fits_soar, read_issi_analytical, read_issi_rmhd
 from model.field.bfield_model import magnetic_field, bz_partial_derivatives
 import numpy as np
