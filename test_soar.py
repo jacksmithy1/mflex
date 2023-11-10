@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-from load.read_file import read_fits_soar, read_issi_analytical, read_issi_rmhd
-from model.field.bfield_model import magnetic_field, bz_partial_derivatives
+from mflex.load.read_file import read_fits_soar, read_issi_analytical, read_issi_rmhd
+from mflex.model.field.bfield_model import magnetic_field, bz_partial_derivatives
 import numpy as np
 import matplotlib.pyplot as plt
-from model.plasma_parameters import deltapres, deltaden
-from plot.plot_magnetogram import plot_fieldlines_grid
-from plot.plot_plasma_parameters import plot_deltaparam
+from mflex.model.plasma_parameters import deltapres, deltaden
+from mflex.plot.plot_magnetogram import plot_fieldlines_grid
+from mflex.plot.plot_plasma_parameters import plot_deltaparam
 from datetime import datetime
 import cProfile
 import pstats

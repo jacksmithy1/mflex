@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 import numpy as np
-from model.field.utility.height_profile import f, dfdz
+from mflex.model.field.utility.height_profile import f, dfdz
 
 # Need to read some papers
 

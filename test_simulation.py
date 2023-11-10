@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-from simulate.simulate_boundary import dipole, non_periodic, dalmatian
+from mflex.simulate.simulate_boundary import dipole, non_periodic, dalmatian
 import numpy as np
-from model.field.bfield_model import magnetic_field, bz_partial_derivatives
-from plot.plot_magnetogram import plot_fieldlines_grid, plot_magnetogram_boundary
-from plot.plot_plasma_parameters import plot_deltaparam
+from mflex.model.field.bfield_model import magnetic_field, bz_partial_derivatives
+from mflex.plot.plot_magnetogram import plot_fieldlines_grid, plot_magnetogram_boundary
+from mflex.plot.plot_plasma_parameters import plot_deltaparam
 
 nresol_x: int = 150
 nresol_y: int = 150

@@ -1,15 +1,15 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-from load.read_file import read_issi_rmhd
+from mflex.load.read_file import read_issi_rmhd
 import numpy as np
-from plot.plot_magnetogram import (
+from mflex.plot.plot_magnetogram import (
     plot_fieldlines_grid,
     plot_magnetogram_boundary,
     plot_magnetogram_boundary_3D,
 )
-from model.field.bfield_model import magnetic_field, bz_partial_derivatives
+from mflex.model.field.bfield_model import magnetic_field, bz_partial_derivatives
 import scipy
-from plot.plot_plasma_parameters import plot_deltaparam
+from mflex.plot.plot_plasma_parameters import plot_deltaparam
 
 # TO DO
 

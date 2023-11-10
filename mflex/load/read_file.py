@@ -4,8 +4,8 @@ import scipy
 import numpy as np
 import math
 from astropy.io.fits import open, getdata
-from plot.plot_magnetogram import plot_magnetogram_boundary
-from classes.clsmod import Data3D, DataBz
+from mflex.plot.plot_magnetogram import plot_magnetogram_boundary
+from mflex.classes.clsmod import Data3D, DataBz
 
 # TO DO
 # Need to split def prep_ISSI_data from get_magnetogram or sth like that
