@@ -4,9 +4,9 @@ from model.field.bfield_model import magnetic_field, bz_partial_derivatives
 from plot.plot_magnetogram import plot_fieldlines_grid, plot_magnetogram_boundary
 from plot.plot_plasma_parameters import plot_deltaparam
 
-nresol_x: int = 300
-nresol_y: int = 300
-nresol_z: int = 300
+nresol_x: int = 150
+nresol_y: int = 150
+nresol_z: int = 150
 xmin: np.float64 = 0.0
 xmax: np.float64 = 1.0
 ymin: np.float64 = 0.0
@@ -17,7 +17,7 @@ z0: np.float64 = 0.2
 pixelsize_x: np.float64 = (xmax - xmin) / nresol_x
 pixelsize_y: np.float64 = (ymax - ymin) / nresol_y
 pixelsize_z: np.float64 = (zmax - zmin) / nresol_z
-nf_max = 300
+nf_max = 100
 
 g: float = 272.2  # solar gravitational acceleration m/s^-2 gravitational acceleration
 
@@ -35,7 +35,7 @@ for ix in range(0, nresol_x):
         y = y_arr[iy]
         data_bz[iy, ix] = dalmatian(x, y)
 
-plot_magnetogram_boundary(data_bz, nresol_y, nresol_x)
+# plot_magnetogram_boundary(data_bz, nresol_y, nresol_x)
 
 a: float = 0.24
 alpha: float = 0.5

@@ -5,3 +5,4 @@ __pycache__/
 *.fits
 .DS_Store
 *.pages
+tests/
