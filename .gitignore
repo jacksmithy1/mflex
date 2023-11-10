@@ -116,3 +116,4 @@ psa*
 *.pages
 tests/
 data/
+*.txt
