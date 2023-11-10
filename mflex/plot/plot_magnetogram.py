@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 import matplotlib.pyplot as plt
 import numpy as np
-from plot.linetracer.fieldline3D import fieldline3d
+from mflex.plot.linetracer.fieldline3D import fieldline3d
 from datetime import datetime
 import math
 from typing import List
