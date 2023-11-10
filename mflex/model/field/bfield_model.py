@@ -3,7 +3,12 @@
 import numpy as np
 from mflex.model.field.utility.seehafer import mirror_magnetogram
 from mflex.model.field.utility.fft import fft_coeff_seehafer
-from mflex.model.field.utility.poloidal import phi, phi_low, dphidz, dphidz_low
+from mflex.model.field.utility.poloidal import (
+    phi,
+    phi_low,
+    dphidz,
+    dphidz_low,
+)
 
 
 def magnetic_field(
@@ -121,20 +126,7 @@ def magnetic_field(
                 if ffunc == "Neukirch":
                     phi_arr[iy, ix, iz] = phi(z, p, q, z0, deltaz)
                     dphidz_arr[iy, ix, iz] = dphidz(z, p, q, z0, deltaz)
-    """
-    ind_y, ind_x, ind_z = np.indices((int(nf_max), int(nf_max), int(nresol_z)))
 
-    q = q_arr[ind_y, ind_x]
-    p = p_arr[ind_y, ind_x]
-    z = z_arr[ind_z]
-
-    if ffunc == "Low":
-        phi_arr[ind_y, ind_x, ind_z] = phi_low(z, p, q, z0, deltaz)
-        dphidz_arr[ind_y, ind_x, ind_z] = dphidz_low(z, p, q, z0, deltaz)
-    elif ffunc == "Neukirch":
-        phi_arr[ind_y, ind_x, ind_z] = phi(z, p, q, z0, deltaz)
-        dphidz_arr[ind_y, ind_x, ind_z] = dphidz(z, p, q, z0, deltaz)
-    """
     b_arr: np.ndarray[np.float64, np.dtype[np.float64]] = np.zeros(
         (2 * nresol_y, 2 * nresol_x, nresol_z, 3)
     )
