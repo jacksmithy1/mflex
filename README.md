@@ -3,18 +3,6 @@
 #### Lilli Nadol
 #### lmn6@st-andrews.ac.uk
 
-### Contents
-#### Introduction 
-#### Quick Start for Solar Orbiter Archive Data
-#### Preparing the Data
-#### Main Codes
-##### Seehafer Mirroring 
-##### Fast Fourier Transformation
-##### Parameters
-### Visualisation Routines
-### Examples
-#### Creating boundary data from an analytical expression
-
 #### Introduction 
 
 The following manual describes the set-up of, and how to use, the Magnetohydrostatic Field Line Extrapolation (MFLEX) Python package to extrapolate 3D field line structures from photospheric line-of-sight observations.
