@@ -108,6 +108,7 @@ data/
 deploy.sh
 x.py
 run.py
+recreate_nw19.py
 
 # data folders
 psa*
@@ -118,3 +119,4 @@ tests/
 data/
 *.txt
 *.pdf
+nw19/

@@ -70,6 +70,7 @@ def magnetic_field(
     kx_arr: np.ndarray[np.float64, np.dtype[np.float64]] = (
         np.arange(nf_max) * np.pi / length_scale_x_norm
     )  # [0:nf_max]
+
     ky_arr: np.ndarray[np.float64, np.dtype[np.float64]] = (
         np.arange(nf_max) * np.pi / length_scale_y_norm
     )  # [0:nf_max]

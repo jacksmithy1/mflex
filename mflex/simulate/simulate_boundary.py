@@ -11,23 +11,19 @@ def dipole(x: np.float64, y: np.float64) -> np.float64:
 
     xx: np.float64 = np.pi * (x - 1.0)
     yy: np.float64 = np.pi * (y - 1.0)
-    mu_x: float = 1.0
-    mu_y: float = -mu_x
-    mu_x1: float = mu_x
-    mu_y1: float = mu_y
-    mu_x2: float = -mu_x1
-    mu_y2: float = -mu_y1
-    kappa_x: float = 20.0
+    mu_x: float = -1.2
+    mu_y: float = mu_x
+    kappa_x: float = 10.0
     kappa_y: float = kappa_x
 
-    return np.exp(kappa_x * np.cos(xx - mu_x1)) / (
+    return np.exp(kappa_x * np.cos(xx - mu_x)) / (
         2.0 * np.pi * np.i0(kappa_x)
-    ) * np.exp(kappa_y * np.cos(yy - mu_y1)) / (2.0 * np.pi * np.i0(kappa_y)) - np.exp(
-        kappa_x * np.cos(xx - mu_x2)
+    ) * np.exp(kappa_y * np.cos(yy - mu_y)) / (2.0 * np.pi * np.i0(kappa_y)) - np.exp(
+        kappa_x * np.cos(xx + mu_x)
     ) / (
         2.0 * np.pi * np.i0(kappa_x)
     ) * np.exp(
-        kappa_y * np.cos(yy - mu_y2)
+        kappa_y * np.cos(yy + mu_y)
     ) / (
         2.0 * np.pi * np.i0(kappa_y)
     )

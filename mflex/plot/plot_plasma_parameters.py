@@ -66,8 +66,8 @@ def plot_deltaparam(
         delta_p[iz] = deltapres(z, z0, deltaz, a, b, bz)
         delta_d[iz] = deltaden(z, z0, deltaz, a, b, bz, bzdotgradbz, g)
 
-    plt.plot(z_arr, delta_p, label="Background pressure", linewidth=0.5)
-    plt.plot(z_arr, delta_d, label="Background density", linewidth=0.5)
+    plt.plot(z_arr, delta_p, label="Delta pressure", linewidth=0.5)
+    plt.plot(z_arr, delta_d, label="Delta density", linewidth=0.5)
     plt.legend()
 
     # current_time = datetime.now()
