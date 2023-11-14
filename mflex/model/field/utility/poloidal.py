@@ -54,18 +54,18 @@ def dphidz(
 
 
 def phi_low(
-    z: np.float64, p: np.float64, q: np.float64, z0: np.float64, deltaz: np.float64
+    z: np.float64, p: np.float64, q: np.float64, kappa: np.float64
 ) -> np.float64:
     """
     Returns poloidal component of magnetic field vector using
     height profile by Low (1991, 1992).
     """
 
-    return jv(p, q * np.exp(-z / (2.0 * deltaz))) / jv(p, q)
+    return jv(p, q * np.exp(-z * kappa / 2.0)) / jv(p, q)
 
 
 def dphidz_low(
-    z: np.float64, p: np.float64, q: np.float64, z0: np.float64, deltaz: np.float64
+    z: np.float64, p: np.float64, q: np.float64, kappa: np.float64
 ) -> np.float64:
     """
     Returns z derivative of poloidal component of magnetic field vector using
@@ -74,11 +74,10 @@ def dphidz_low(
 
     return (
         (
-            q
-            * np.exp(-z / (2.0 * deltaz))
-            * jv(p + 1.0, q * np.exp(-z / (2.0 * deltaz)))
-            - p * jv(p, q * np.exp(-z / (2.0 * deltaz)))
+            q * np.exp(-z * kappa / 2.0) * jv(p + 1.0, q * np.exp(-z * kappa / 2.0))
+            - p * jv(p, q * np.exp(-z * kappa / 2.0))
         )
-        / (2.0 * deltaz)
+        * kappa
+        / 2.0
         / jv(p, q)
     )

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 import numpy as np
-from mflex.model.field.utility.height_profile import f, dfdz
+from mflex.model.field.utility.height_profile import f, dfdz, f_low, dfdz_low
 
 
 def btemp(z, z0, deltaz, T0, T1):
@@ -42,6 +42,21 @@ def deltapres(
     return -f(z, z0, deltaz, a, b) * bz**2.0 / 2.0  # (8.0**np.pi)
 
 
+def deltapres_low(
+    z: np.float64,
+    z0: np.float64,
+    deltaz: np.float64,
+    a: float,
+    b: float,
+    bz: np.float64,
+) -> np.float64:
+    """
+    Returns variation of pressure with height z at given x and y.
+    """
+    kappa = 1.0 / z0
+    return -f_low(z, a, kappa) * bz**2.0 / 2.0  # (8.0**np.pi)
+
+
 def pres(z, z0, deltaz, a, b, beta0, bz, h, T0, T1):
     return (
         0.5 * beta0 * bpressure(z, z0, deltaz, h, T0, T1)
@@ -72,6 +87,23 @@ def deltaden(
         dfdz(z, z0, deltaz, a, b) * bz**2.0 / 2.0
         + f(z, z0, deltaz, a, b) * bzdotgradbz
     )  # / (g * 4.0 * np.pi)
+
+
+def deltaden_low(
+    z: np.float64,
+    z0: np.float64,
+    deltaz: np.float64,
+    a: float,
+    b: float,
+    bz: np.float64,
+    bzdotgradbz: np.float64,
+    g: float,
+) -> np.float64:
+    """
+    Returns variation of density with height z at given x and y.
+    """
+    kappa = 1.0 / z0
+    return dfdz_low(z, a, kappa) * bz**2.0 / 2.0 + f_low(z, a, kappa) * bzdotgradbz
 
 
 def den(z, z0, deltaz, a, b, bz, bzdotgradbz, beta0, h, T0, T1, T_photosphere):
