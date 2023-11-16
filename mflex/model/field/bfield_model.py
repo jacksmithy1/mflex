@@ -516,13 +516,13 @@ def bz_partial_derivatives(
         coeffs2: np.ndarray[np.float64, np.dtype[np.float64]] = np.multiply(
             np.multiply(np.multiply(k2_arr, phi_arr[:, :, iz]), anm), kx_grid
         )
-        bz_derivs[:, :, iz, 0] = np.matmul(sin_y.T, np.matmul(coeffs2, cos_x))
+        bz_derivs[:, :, iz, 1] = np.matmul(sin_y.T, np.matmul(coeffs2, cos_x))
 
         coeffs3: np.ndarray[np.float64, np.dtype[np.float64]] = np.multiply(
             np.multiply(np.multiply(k2_arr, phi_arr[:, :, iz]), anm),
             ky_grid,
         )
-        bz_derivs[:, :, iz, 1] = np.matmul(cos_y.T, np.matmul(coeffs3, sin_x))
+        bz_derivs[:, :, iz, 0] = np.matmul(cos_y.T, np.matmul(coeffs3, sin_x))
     """
     coeffs = (k2_arr[:, :, np.newaxis] * dphidz_arr) * anm[:, :, np.newaxis]
     bz_derivs[:, :, :, 2] = np.einsum(
@@ -683,12 +683,12 @@ def bz_partial_derivatives_low(
         coeffs2: np.ndarray[np.float64, np.dtype[np.float64]] = np.multiply(
             np.multiply(np.multiply(k2_arr, phi_arr[:, :, iz]), anm), kx_grid
         )
-        bz_derivs[:, :, iz, 0] = np.matmul(sin_y.T, np.matmul(coeffs2, cos_x))
+        bz_derivs[:, :, iz, 1] = np.matmul(sin_y.T, np.matmul(coeffs2, cos_x))
 
         coeffs3: np.ndarray[np.float64, np.dtype[np.float64]] = np.multiply(
             np.multiply(np.multiply(k2_arr, phi_arr[:, :, iz]), anm),
             ky_grid,
         )
-        bz_derivs[:, :, iz, 1] = np.matmul(cos_y.T, np.matmul(coeffs3, sin_x))
+        bz_derivs[:, :, iz, 0] = np.matmul(cos_y.T, np.matmul(coeffs3, sin_x))
 
     return bz_derivs

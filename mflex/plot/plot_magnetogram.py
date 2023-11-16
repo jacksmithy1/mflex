@@ -276,7 +276,7 @@ def plot_fieldlines_polar(
     # ax.view_init(90, -90)
     # ax.view_init(30, 240, 0)
     ax.view_init(0, -90)
-    ax.set_box_aspect((xmax, ymax, 1))
+    ax.set_box_aspect((1, 1, 1))
 
     nlinesmaxr: int = 2
     nlinesmaxphi: int = 10

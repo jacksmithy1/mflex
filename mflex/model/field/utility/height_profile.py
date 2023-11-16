@@ -30,7 +30,7 @@ def dfdz(
     according to Neukirch and Wiegelmann (2019).
     """
 
-    return -a * b / (deltaz * np.cosh((z - z0) / deltaz))
+    return -a * b / (deltaz * np.cosh((z - z0) / deltaz) ** 2)
 
 
 def dfdz_low(z: np.float64, a: float, kappa: float) -> np.float64:
