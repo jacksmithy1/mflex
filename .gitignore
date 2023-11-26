@@ -109,6 +109,7 @@ deploy.sh
 x.py
 run.py
 recreate_nw19.py
+test_vectorised.py
 
 # data folders
 psa*

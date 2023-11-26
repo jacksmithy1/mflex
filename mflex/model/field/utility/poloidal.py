@@ -27,6 +27,29 @@ def phi(
         return np.exp(-2.0 * rminus * (z - z0)) / d
 
 
+def phi_vectorized(
+    z: np.ndarray, p: np.ndarray, q: np.ndarray, z0: float, deltaz: float
+) -> np.ndarray:
+    """
+    Vectorized version of the phi function that operates on NumPy arrays.
+    """
+    rplus = p / deltaz
+    rminus = q / deltaz
+
+    r = rminus / rplus
+    d = np.cosh(2.0 * rplus * z0) + r * np.sinh(2.0 * rplus * z0)
+
+    result = np.empty_like(z)
+    mask = z < z0
+    result[mask] = (
+        np.cosh(2.0 * rplus * (z0 - z[mask]))
+        + r[mask] * np.sinh(2.0 * rplus * (z0 - z[mask]))
+    ) / d[mask]
+    result[~mask] = np.exp(-2.0 * rminus[~mask] * (z[~mask] - z0)) / d[~mask]
+
+    return result
+
+
 def dphidz(
     z: np.float64, p: np.float64, q: np.float64, z0: np.float64, deltaz: np.float64
 ) -> np.float64:
@@ -51,6 +74,35 @@ def dphidz(
 
     else:
         return -2.0 * rminus * np.exp(-2.0 * rminus * (z - z0)) / d
+
+
+def dphidz_vectorized(
+    z: np.ndarray, p: np.ndarray, q: np.ndarray, z0: float, deltaz: float
+) -> np.ndarray:
+    """
+    Vectorized version of the dphidz function that operates on NumPy arrays.
+    """
+    rplus = p / deltaz
+    rminus = q / deltaz
+
+    r = rminus / rplus
+    d = np.cosh(2.0 * rplus * z0) + r * np.sinh(2.0 * rplus * z0)
+
+    result = np.empty_like(z)
+    mask = z < z0
+    result[mask] = (
+        -2.0
+        * rplus
+        * (
+            np.sinh(2.0 * rplus * (z0 - z[mask]))
+            + r[mask] * np.cosh(2.0 * rplus * (z0 - z[mask]))
+        )
+    ) / d[mask]
+    result[~mask] = (
+        -2.0 * rminus[~mask] * np.exp(-2.0 * rminus[~mask] * (z[~mask] - z0))
+    ) / d[~mask]
+
+    return result
 
 
 def phi_low(

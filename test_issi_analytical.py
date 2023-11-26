@@ -19,8 +19,11 @@ from mflex.model.plasma_parameters import (
     deltaden,
     pres,
     den,
+    btemp_linear,
+    temp,
 )
 from datetime import datetime
+from mflex.model.field.utility.height_profile import f
 
 # TO DO
 
@@ -73,8 +76,8 @@ zmin: np.float64 = data.zmin
 zmax: np.float64 = data.zmax
 z0: np.float64 = data.z0
 
-a: float = 0.24
-alpha: float = 0.5
+a: float = 0.149
+alpha: float = 1.0
 b: float = 1.0
 
 h1: float = 0.0001  # Initial step length for fieldline3D
@@ -83,6 +86,7 @@ eps: float = 1.0e-8
 hmin: float = 0.0  # Minimum step length for fieldline3D
 hmax: float = 1.0  # Maximum step length for fieldline3D
 g: float = 272.2  # solar gravitational acceleration m/s^-2 gravitational acceleration
+
 
 deltaz: np.float64 = np.float64(
     z0 / 10.0
@@ -133,9 +137,9 @@ bfield = magnetic_field(
 #    np.save(file, B_Seehafer)
 
 b_back = np.zeros((2 * nresol_y, 2 * nresol_x))
-b_back = bfield[nresol_y : 2 * nresol_y, nresol_x : 2 * nresol_x, 0, 2]
+b_back = bfield[:, :, 0, 2]
 # plot_magnetogram_boundary(b_back, nresol_x, nresol_y)
-
+"""
 plot_fieldlines_grid(
     bfield,
     h1,
@@ -155,7 +159,7 @@ plot_fieldlines_grid(
     b,
     alpha,
     nf_max,
-)
+)"""
 
 dpartial_bfield: np.ndarray[np.float64, np.dtype[np.float64]] = bz_partial_derivatives(
     data_bz,
@@ -178,18 +182,28 @@ dpartial_bfield: np.ndarray[np.float64, np.dtype[np.float64]] = bz_partial_deriv
     nf_max,
 )
 
-t_photosphere = 5600.0
-t_corona = 2.0 * 10.0**6
+t_photosphere = 6000.0
+t_corona = 1.0 * 10.0**6
+t_z0 = 10000.0
 t0 = (t_photosphere + t_corona * np.tanh(z0 / deltaz)) / (1.0 + np.tanh(z0 / deltaz))
 t1 = (t_corona - t_photosphere) / (1.0 + np.tanh(z0 / deltaz))
-g_solar = 274.0
-mbar = 1.0
-h = 1.3807 * t0 / (mbar * 1.6726 * g_solar) * 0.001
-rho0 = 3.0**-4
-b0 = 500.0
-p0 = 1.3807 * t_photosphere * rho0 / (mbar * 1.6726) * 1.0
-pB0 = 3.9789 - 3 * b0**2
+t0 = t_z0
+t1 = t0 - t_photosphere
+g_solar = 272.2
+mbar = 1.0  # Mean molecular weight
+h = (
+    1.3807 * t0 / (mbar * 1.6726 * g_solar) * 0.001
+)  # presure scale height = kB * t0 / (mbar*g) in units of 10^4
+rho0 = 3.0**-4  # plasma density at z = 0
+b0 = 500.0  # 500 Gauss background magnetic field strength
+b0 = 1.0
+p0 = (
+    1.3807 * t_photosphere * rho0 / (mbar * 1.6726) * 1.0 * 10**4
+)  # Ideal gas law fulfilled on photosphere
+pB0 = 3.9789 * 10**-3 * b0**2  # Magnetic pressure on photosphere
 beta0 = p0 / pB0
+b = 1.0
+
 x_arr: np.ndarray[np.float64, np.dtype[np.float64]] = (
     np.arange(nresol_x) * (xmax - xmin) / (nresol_x - 1) + xmin
 )
@@ -200,11 +214,30 @@ z_arr: np.ndarray[np.float64, np.dtype[np.float64]] = (
     np.arange(nresol_z) * (zmax - zmin) / (nresol_z - 1) + zmin
 )
 
+
 backpres = 0.0 * z_arr
 backtemp = 0.0 * z_arr
 backden = 0.0 * z_arr
 
-maxcoord = np.unravel_index(np.argmax(b_back, axis=None), b_back.shape)
+# for iz in range(nresol_z):
+#    z = z_arr[iz]
+#    backpres[iz] = bpressure(z, z0, deltaz, h, t0, t1)
+#    backden[iz] = bdensity(z, z0, deltaz, h, t0, t1)
+#    backtemp[iz] = btemp(z, z0, deltaz, t0, t1)
+
+# plt.plot(z_arr, backtemp, label="Background temperature", linewidth=0.5)
+# plt.plot(z_arr, backden, label="Background density", linewidth=0.5)
+# plt.plot(z_arr, backpres, label="Background pressure", linewidth=0.5)
+# plt.yscale("log")
+# plt.legend()
+# plt.show()
+
+# exit()
+b_back_small = b_back[nresol_y : 2 * nresol_y, nresol_x : 2 * nresol_x]
+maxcoord = np.unravel_index(
+    np.argmax(b_back_small, axis=None),
+    b_back_small.shape,
+)
 iy: int = int(maxcoord[0])
 ix: int = int(maxcoord[1])
 print(ix, iy)
@@ -213,10 +246,13 @@ dpres = 0.0 * z_arr
 dden = 0.0 * z_arr
 fpres = 0.0 * z_arr
 fden = 0.0 * z_arr
+ftemp = 0.0 * z_arr
+ffunc = 0.0 * z_arr
 
 for iz in range(nresol_z):
     z = z_arr[iz]
     bz = bfield[iy, ix, iz, 2]
+    # print(iz, bz)
     bzdotgradbz = (
         dpartial_bfield[iy, ix, iz, 1] * bfield[iy, ix, iz, 1]
         + dpartial_bfield[iy, ix, iz, 0] * bfield[iy, ix, iz, 0]
@@ -226,16 +262,38 @@ for iz in range(nresol_z):
     backden[iz] = bdensity(z, z0, deltaz, h, t0, t1)
     backtemp[iz] = btemp(z, z0, deltaz, t0, t1)
     dpres[iz] = deltapres(z, z0, deltaz, a, b, bz)
-    dden[iz] = deltaden(z, z0, deltaz, a, b, bz, bzdotgradbz, g_solar)
+    dden[iz] = deltaden(z, z0, deltaz, a, b, bz, bzdotgradbz)
     fpres[iz] = pres(z, z0, deltaz, a, b, beta0, bz, h, t0, t1)
     fden[iz] = den(
         z, z0, deltaz, a, b, bz, bzdotgradbz, beta0, h, t0, t1, t_photosphere
     )
+    ftemp[iz] = temp(
+        z, z0, deltaz, a, b, bz, bzdotgradbz, beta0, h, t0, t1, t_photosphere
+    )
+    # ffunc[iz] = f(z, z0, deltaz, a, b) * bz**2.0 / 2.0
 
+
+# plt.plot(z_arr, backpres, label="Background Pres", linewidth=0.5, color="green")
+# plt.plot(z_arr, backden, label="Background Den", linewidth=0.5, color="red")
+# plt.plot(z_arr, backtemp, label="Background Temp", linewidth=0.5, color="orange")
+# plt.plot(z_arr, ftemp, label="Temp", linewidth=0.5, color="orange")
+# plt.plot(z_arr, dpres, label="Delta Pres", linewidth=0.5, color="lightblue")
+# plt.plot(z_arr, ffunc, label="Delta Pres", linewidth=0.5, color="lightblue")
+# plt.plot(z_arr, dden, label="Delta Den", linewidth=0.5, color="pink")
+# plt.plot(z_arr, fpres, label="Pressure", linewidth=0.5, color="navy")
+plt.plot(z_arr, fden, label="Density", linewidth=0.5, color="purple")
+plt.axvline(
+    x=z0, color="black", label="z0 = " + str(z0), linestyle="dashed", linewidth=0.5
+)
+plt.legend()
+plt.xlim([0, 2 * z0])
+plt.show()
+exit()
 current_time = datetime.now()
 dt_string = current_time.strftime("%d-%m-%Y_%H-%M-%S")
 
-plt.plot(z_arr, backpres, label="Background pressure", linewidth=0.5, color="orange")
+
+"""plt.plot(z_arr, backpres, label="Background pressure", linewidth=0.5, color="orange")
 plt.axvline(
     x=z0, color="black", label="z0 = " + str(z0), linestyle="dashed", linewidth=0.5
 )
@@ -255,8 +313,8 @@ plotname = (
 )
 plt.savefig(plotname, dpi=300)
 plt.show()
-exit()
-plt.plot(z_arr, backden, label="Background density", linewidth=0.5, color="magenta")
+exit()"""
+"""plt.plot(z_arr, backden, label="Background density", linewidth=0.5, color="magenta")
 plt.legend()
 plotname = (
     "/Users/lilli/Desktop/mflex/tests/issi_analytical_backden_"
@@ -291,8 +349,10 @@ plotname = (
     + ".png"
 )
 plt.savefig(plotname, dpi=300)
-plt.show()
-plt.plot(
+plt.show()"""
+
+
+"""plt.plot(
     z_arr,
     dpres,
     label="Delta pressure",
@@ -305,12 +365,15 @@ plt.plot(
     label="Delta density",
     linewidth=0.5,
     color="magenta",
-)
+)"""
+plt.plot(z_arr, backpres, label="Background Pres", linewidth=0.5, color="lightblue")
+# plt.plot(z_arr, backden, label="Background den", linewidth=0.5, color="purple")
 plt.axvline(
     x=z0, color="black", label="z0 = " + str(z0), linestyle="dashed", linewidth=0.5
 )
+plt.xlim([0.0, 2 * z0])
 plt.legend()
-plotname = (
+"""plotname = (
     "/Users/lilli/Desktop/mflex/tests/issi_analytical_deltap_deltarho_"
     + str(a)
     + "_"
@@ -323,9 +386,11 @@ plotname = (
     + dt_string
     + ".png"
 )
-plt.savefig(plotname, dpi=300)
+plt.savefig(plotname, dpi=300)"""
 plt.show()
 exit()
+"""
+"""
 
 plot_deltaparam(
     bfield,

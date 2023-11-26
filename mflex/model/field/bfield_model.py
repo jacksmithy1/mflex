@@ -8,6 +8,8 @@ from mflex.model.field.utility.poloidal import (
     phi_low,
     dphidz,
     dphidz_low,
+    dphidz_vectorized,
+    phi_vectorized,
 )
 
 
@@ -38,6 +40,7 @@ def magnetic_field(
     """
 
     length_scale: np.float64 = np.float64(2.0)  # Normalising length scale for Seehafer
+
     length_scale_x: np.float64 = 2.0 * nresol_x * pixelsize_x
     # Length scale in x direction for Seehafer
     length_scale_y: np.float64 = 2.0 * nresol_y * pixelsize_y

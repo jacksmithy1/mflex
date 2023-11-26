@@ -129,8 +129,8 @@ def plot_fieldlines_grid(
     ax.set_ylabel("y")
     ax.set_zlabel("z")
     ax.set_zlim([zmin, zmax])
-    # ax.view_init(90, -90)
-    ax.view_init(30, 240, 0)
+    ax.view_init(90, -90)
+    # ax.view_init(30, 240, 0)
     ax.set_box_aspect((xmax, ymax, 1))
 
     x_0: float = 1.0 * 10**-8
@@ -200,12 +200,12 @@ def plot_fieldlines_grid(
                 linewidth=0.5,
                 zorder=4000,
             )
-    """
-    current_time = datetime.now()
+
+    """current_time = datetime.now()
     dt_string = current_time.strftime("%d-%m-%Y_%H-%M-%S")
 
     plotname = (
-        "/Users/lilli/Desktop/ISSI_code/tests/solo_L2_phi-hrt-blos_20220307T000609_V01_"
+        "/Users/lilli/Desktop/mflex/tests/solo_L2_phi-hrt-blos_20220307T000609_V01_"
         + str(a)
         + "_"
         + str(b)
@@ -217,8 +217,9 @@ def plot_fieldlines_grid(
         + dt_string
         + ".png"
     )
-    plt.savefig(plotname, dpi=300)
-    """
+    ax.set_zticklabels([])
+    plt.savefig(plotname, dpi=300)"""
+
     plt.show()
 
 
@@ -274,8 +275,8 @@ def plot_fieldlines_polar(
     ax.set_zlabel("z")
     ax.set_zlim([zmin, zmax])
     # ax.view_init(90, -90)
-    # ax.view_init(30, 240, 0)
-    ax.view_init(0, -90)
+    ax.view_init(30, -115, 0)
+
     ax.set_box_aspect((1, 1, 1))
 
     nlinesmaxr: int = 2
@@ -341,11 +342,35 @@ def plot_fieldlines_polar(
                 fieldline_y,
                 fieldline_x,
                 fieldline_z,
-                color="red",
+                color="blue",
                 linewidth=0.5,
                 zorder=4000,
             )
 
-    plotname = "/Users/lilli/Desktop/mflex/nw19/figure4d.png"
+    plotname = "/Users/lilli/Desktop/mflex/nw19/figure3c1.png"
     plt.savefig(plotname, dpi=300)
+
+    ax.view_init(0, -90)
+    plotname = "/Users/lilli/Desktop/mflex/nw19/figure4c1.png"
+    plt.savefig(plotname, dpi=300)
+
+    """current_time = datetime.now()
+    dt_string = current_time.strftime("%d-%m-%Y_%H-%M-%S")
+
+    plotname = (
+        "/Users/lilli/Desktop/mflex/tests/vonmises_"
+        + str(a)
+        + "_"
+        + str(b)
+        + "_"
+        + str(alpha)
+        + "_"
+        + str(nf_max)
+        + "_"
+        + dt_string
+        + ".png"
+    )
+    ax.set_zticklabels([])
+    plt.savefig(plotname, dpi=300)"""
+
     plt.show()

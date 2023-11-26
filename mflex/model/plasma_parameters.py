@@ -27,6 +27,13 @@ def bpressure(z, z0, deltaz, h, T0, T1):
     return (p1**q1) * (p2**q2) * (p3**q3)
 
 
+def bdensity(z, z0, deltaz, h, T0, T1):
+    temp0 = T0 - T1 * np.tanh(z0 / deltaz)
+    dummypres = bpressure(z, z0, deltaz, h, T0, T1)
+    dummytemp = btemp(z, z0, deltaz, T0, T1)
+    return dummypres / dummytemp * temp0
+
+
 def deltapres(
     z: np.float64,
     z0: np.float64,
@@ -58,15 +65,9 @@ def deltapres_low(
 
 
 def pres(z, z0, deltaz, a, b, beta0, bz, h, T0, T1):
-    return (
-        0.5 * beta0 * bpressure(z, z0, deltaz, h, T0, T1)
-        + bz**2.0 * f(z, z0, deltaz, a, b) / 2.0
+    return 0.5 * beta0 * bpressure(z, z0, deltaz, h, T0, T1) + deltapres(
+        z, z0, deltaz, a, b, bz
     )
-
-
-def bdensity(z, z0, deltaz, h, T0, T1):
-    temp0 = btemp(z, z0, deltaz, T0, T1)
-    return bpressure(z, z0, deltaz, h, T1, T0) / btemp(z, z0, deltaz, T0, T1) * temp0
 
 
 def deltaden(
@@ -77,7 +78,6 @@ def deltaden(
     b: float,
     bz: np.float64,
     bzdotgradbz: np.float64,
-    g: float,
 ) -> np.float64:
     """
     Returns variation of density with height z at given x and y.
@@ -107,25 +107,25 @@ def deltaden_low(
 
 
 def den(z, z0, deltaz, a, b, bz, bzdotgradbz, beta0, h, T0, T1, T_photosphere):
-    return (
-        0.5 * beta0 / h * T0 / T_photosphere * bdensity(z, z0, deltaz, T0, T1, h)
-        + dfdz(z, z0, deltaz, a, b) * bz**2.0 / 2.0
-        + f(z, z0, deltaz, a, b) * bzdotgradbz
-    )
+    return 0.5 * beta0 / h * T0 / T_photosphere * bdensity(
+        z, z0, deltaz, h, T0, T1
+    ) + deltaden(z, z0, deltaz, a, b, bz, bzdotgradbz)
 
 
-"""
 def btemp_linear(z, temps, heights):
-    t1, t2, t3 = temps[0], temps[1], temps[2]
-    h1, h2, h3 = heights[0], heights[1], heights[2]
+    t1, t2, t3, t4 = temps[0], temps[1], temps[2], temps[3]
+    h1, h2, h3, h4 = heights[0], heights[1], heights[2], heights[3]
 
     m1 = (t2 - t1) / (h2 - h1)
     m2 = (t3 - t2) / (h3 - h2)
+    m3 = (t4 - t3) / (h4 - h3)
 
     if z >= h1 and z <= h2:
         t = t1 + m1 * (z - h1)
     elif z >= h2 and z <= h3:
         t = t2 + m2 * (z - h2)
+    elif z >= h3 and z <= h4:
+        t = t3 + m3 * (z - h3)
     else:
         print("z= " + str(z) + " not in range")
         raise ValueError
@@ -133,28 +133,7 @@ def btemp_linear(z, temps, heights):
     return t
 
 
-def temp(
-    ix, iy, iz, z, z0, deltaz, a, b, bx, by, bz, dBz, beta0, h, T0, T1, T_photosphere
-):
-    p = pres(ix, iy, iz, z, z0, deltaz, a, b, beta0, bz, h, T0, T1)
-    d = den(
-        ix,
-        iy,
-        iz,
-        z,
-        z0,
-        deltaz,
-        a,
-        b,
-        bx,
-        by,
-        bz,
-        dBz,
-        beta0,
-        h,
-        T0,
-        T1,
-        T_photosphere,
-    )
+def temp(z, z0, deltaz, a, b, bz, bzdotgradbz, beta0, h, T0, T1, T_photosphere):
+    p = pres(z, z0, deltaz, a, b, beta0, bz, h, T0, T1)
+    d = den(z, z0, deltaz, a, b, bz, bzdotgradbz, beta0, h, T0, T1, T_photosphere)
     return p / d
-"""

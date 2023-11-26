@@ -48,8 +48,8 @@ zmin: np.float64 = data.zmin
 zmax: np.float64 = data.zmax
 z0: np.float64 = data.z0
 
-a: float = 0.24
-alpha: float = 0.5
+a: float = 0.149
+alpha: float = 1.0
 b: float = 1.0
 
 deltaz: np.float64 = np.float64(z0 / 10.0)
@@ -127,7 +127,7 @@ plot_fieldlines_grid(
     alpha,
     nf_max,
 )
-
+exit()
 dpartial_bfield: np.ndarray[np.float64, np.dtype[np.float64]] = bz_partial_derivatives(
     data_bz,
     z0,
