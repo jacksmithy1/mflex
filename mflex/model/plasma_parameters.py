@@ -11,12 +11,12 @@ def btemp(z, z0, deltaz, T0, T1):
 def bpressure(z, z0, deltaz, h, T0, T1):
     q1 = deltaz / (2.0 * h * (1.0 + T1 / T0))
     q2 = deltaz / (2.0 * h * (1.0 - T1 / T0))
-    q3 = deltaz * (T1 / T0) / (2.0 * h * (1.0 - (T1 / T0) ** 2))
+    q3 = deltaz * (T1 / T0) / (h * (1.0 - (T1 / T0) ** 2))
 
     p1 = (
         2.0
         * np.exp(-2.0 * (z - z0) / deltaz)
-        / (1.0 * np.exp(-2.0 * (z - z0) / deltaz))
+        / (1.0 + np.exp(-2.0 * (z - z0) / deltaz))
         / (1.0 + np.tanh(z0 / deltaz))
     )
     p2 = (1.0 - np.tanh(z0 / deltaz)) / (1.0 + np.tanh((z - z0) / deltaz))
@@ -51,22 +51,19 @@ def deltapres(
 
 def deltapres_low(
     z: np.float64,
-    z0: np.float64,
-    deltaz: np.float64,
+    kappa: np.float64,
     a: float,
-    b: float,
     bz: np.float64,
 ) -> np.float64:
     """
     Returns variation of pressure with height z at given x and y.
     """
-    kappa = 1.0 / z0
     return -f_low(z, a, kappa) * bz**2.0 / 2.0  # (8.0**np.pi)
 
 
-def pres(z, z0, deltaz, a, b, beta0, bz, h, T0, T1):
+def pres(z, z0, deltaz, z0_b, deltaz_b, a, b, beta0, bz, h, T0, T1):
     return 0.5 * beta0 * bpressure(z, z0, deltaz, h, T0, T1) + deltapres(
-        z, z0, deltaz, a, b, bz
+        z, z0_b, deltaz_b, a, b, bz
     )
 
 
@@ -91,25 +88,36 @@ def deltaden(
 
 def deltaden_low(
     z: np.float64,
-    z0: np.float64,
-    deltaz: np.float64,
+    kappa: np.float64,
     a: float,
-    b: float,
     bz: np.float64,
     bzdotgradbz: np.float64,
-    g: float,
 ) -> np.float64:
     """
     Returns variation of density with height z at given x and y.
     """
-    kappa = 1.0 / z0
     return dfdz_low(z, a, kappa) * bz**2.0 / 2.0 + f_low(z, a, kappa) * bzdotgradbz
 
 
-def den(z, z0, deltaz, a, b, bz, bzdotgradbz, beta0, h, T0, T1, T_photosphere):
+def den(
+    z,
+    z0,
+    deltaz,
+    z0_b,
+    deltaz_b,
+    a,
+    b,
+    bz,
+    bzdotgradbz,
+    beta0,
+    h,
+    T0,
+    T1,
+    T_photosphere,
+):
     return 0.5 * beta0 / h * T0 / T_photosphere * bdensity(
         z, z0, deltaz, h, T0, T1
-    ) + deltaden(z, z0, deltaz, a, b, bz, bzdotgradbz)
+    ) + deltaden(z, z0_b, deltaz_b, a, b, bz, bzdotgradbz)
 
 
 def btemp_linear(z, temps, heights):

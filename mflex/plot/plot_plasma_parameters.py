@@ -29,36 +29,24 @@ def plot_deltaparam(
     at [y,x] where photospheric magnetic field strength is maximal.
     """
 
-    b_back: np.ndarray[np.float64, np.dtype[np.float64]] = np.zeros(
-        (nresol_y, nresol_x)
-    )
-    b_back: np.ndarray[np.float64, np.dtype[np.float64]] = bfield[
-        nresol_y : 2 * nresol_y, nresol_x : 2 * nresol_x, 0, 2
-    ]
+    b_back = np.zeros((nresol_y, nresol_x))
+    b_back = bfield[nresol_y : 2 * nresol_y, nresol_x : 2 * nresol_x, 0, 2]
     maxcoord = np.unravel_index(np.argmax(b_back, axis=None), b_back.shape)
 
-    iy: int = int(maxcoord[0])
-    ix: int = int(maxcoord[1])
+    iy = int(maxcoord[0])
+    ix = int(maxcoord[1])
 
-    x_arr: np.ndarray[np.float64, np.dtype[np.float64]] = (
-        np.arange(nresol_x) * (xmax - xmin) / (nresol_x - 1) + xmin
-    )
-    y_arr: np.ndarray[np.float64, np.dtype[np.float64]] = (
-        np.arange(nresol_y) * (ymax - ymin) / (nresol_y - 1) + ymin
-    )
-    z_arr: np.ndarray[np.float64, np.dtype[np.float64]] = (
-        np.arange(nresol_z) * (zmax - zmin) / (nresol_z - 1) + zmin
-    )
+    z_arr = np.arange(nresol_z) * (zmax - zmin) / (nresol_z - 1) + zmin
 
     # Background Pressure and Density variations
 
-    delta_p: np.ndarray[np.float64, np.dtype[np.float64]] = np.zeros(nresol_z)
-    delta_d: np.ndarray[np.float64, np.dtype[np.float64]] = np.zeros(nresol_z)
+    delta_p = np.zeros(nresol_z)
+    delta_d = np.zeros(nresol_z)
 
     for iz in range(0, nresol_z):
-        z: np.float64 = z_arr[iz]
-        bz: np.float64 = bfield[iy, ix, iz, 2]
-        bzdotgradbz: np.float64 = (
+        z = z_arr[iz]
+        bz = bfield[iy, ix, iz, 2]
+        bzdotgradbz = (
             bfield[iy, ix, iz, 1] * dbzpartial[iy, ix, iz, 1]
             + bfield[iy, ix, iz, 0] * dbzpartial[iy, ix, iz, 0]
             + bfield[iy, ix, iz, 2] * dbzpartial[iy, ix, iz, 2]

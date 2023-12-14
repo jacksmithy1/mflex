@@ -11,10 +11,9 @@ def Vec_corr_metric(
     Returns Vector Correlation metric of B : B_ref and b : B_rec.
     """
 
-    num: np.float64 = np.sum(np.multiply(B, b))
-    div: np.float64 = np.sqrt(np.sum(np.multiply(B, B)) * np.sum(np.multiply(b, b)))
-
-    return num / div
+    return np.sum(np.multiply(B, b)) / (
+        np.sqrt(np.sum(np.multiply(B, B)) * np.sum(np.multiply(b, b)))
+    )
 
 
 def Cau_Schw_metric(
@@ -25,14 +24,10 @@ def Cau_Schw_metric(
     Returns Cauchy Schwarz metric of B : B_ref and b : B_rec.
     """
 
-    N: np.float64 = np.size(B)
-    num: np.ndarray[np.float64, np.dtype[np.float64]] = np.multiply(B, b)
-    div: np.ndarray[np.float64, np.dtype[np.float64]] = np.reciprocal(
-        np.multiply(abs(B), abs(b))
-    )
-    temp: np.float64 = np.sum(np.multiply(num, div))
-
-    return temp / N
+    N = np.size(B)
+    num = np.multiply(B, b)
+    div = np.reciprocal(np.multiply(abs(B), abs(b)))
+    return np.sum(np.multiply(num, div)) / N
 
 
 def Norm_vec_err_metric(
@@ -43,10 +38,7 @@ def Norm_vec_err_metric(
     Returns Normalised Vector Error metric of B : B_ref and b : B_rec.
     """
 
-    num: np.float64 = np.sum(abs(np.subtract(B, b)))
-    div: np.float64 = np.sum(np.abs(B))
-
-    return num / div
+    return np.sum(abs(np.subtract(B, b))) / np.sum(np.abs(B))
 
 
 def Mean_vec_err_metric(
@@ -57,12 +49,11 @@ def Mean_vec_err_metric(
     Returns Mean Vector Error metric of B : B_ref and b : B_rec.
     """
 
-    N: np.float64 = np.size(B)
-    num: np.ndarray[np.float64, np.dtype[np.float64]] = abs(np.subtract(B, b))
-    div: np.ndarray[np.float64, np.dtype[np.float64]] = abs(np.reciprocal(B))
-    temp: np.float64 = np.sum(np.multiply(num, div))
+    N = np.size(B)
+    num = abs(np.subtract(B, b))
+    div = abs(np.reciprocal(B))
 
-    return temp / N
+    return np.sum(np.multiply(num, div)) / N
 
 
 def Mag_ener_metric(
@@ -73,14 +64,14 @@ def Mag_ener_metric(
     Returns Magnetic Energy metric of B : B_ref and b : B_rec.
     """
 
-    Bx: np.ndarray[np.float64, np.dtype[np.float64]] = B[:, :, :, 1][0, 0]
-    By: np.ndarray[np.float64, np.dtype[np.float64]] = B[:, :, :, 0][0, 0]
-    Bz: np.ndarray[np.float64, np.dtype[np.float64]] = B[:, :, :, 2][0, 0]
-    bx: np.ndarray[np.float64, np.dtype[np.float64]] = b[:, :, :, 1][0, 0]
-    by: np.ndarray[np.float64, np.dtype[np.float64]] = b[:, :, :, 0][0, 0]
-    bz: np.ndarray[np.float64, np.dtype[np.float64]] = b[:, :, :, 2][0, 0]
+    Bx = B[:, :, :, 1][0, 0]
+    By = B[:, :, :, 0][0, 0]
+    Bz = B[:, :, :, 2][0, 0]
+    bx = b[:, :, :, 1][0, 0]
+    by = b[:, :, :, 0][0, 0]
+    bz = b[:, :, :, 2][0, 0]
 
-    num: np.float64 = np.sqrt(np.dot(bx, bx) + np.dot(by, by) + np.dot(bz, bz))
-    div: np.float64 = np.sqrt(np.dot(Bx, Bx) + np.dot(By, By) + np.dot(Bz, Bz))
+    num = np.sqrt(np.dot(bx, bx) + np.dot(by, by) + np.dot(bz, bz))
+    div = np.sqrt(np.dot(Bx, Bx) + np.dot(By, By) + np.dot(Bz, Bz))
 
     return num / div

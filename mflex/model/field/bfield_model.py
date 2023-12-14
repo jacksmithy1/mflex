@@ -39,15 +39,15 @@ def magnetic_field(
     series expansion using anm, phi and dphidz.
     """
 
-    length_scale: np.float64 = np.float64(2.0)  # Normalising length scale for Seehafer
+    length_scale = np.float64(2.0)  # Normalising length scale for Seehafer
 
-    length_scale_x: np.float64 = 2.0 * nresol_x * pixelsize_x
+    length_scale_x = 2.0 * nresol_x * pixelsize_x
     # Length scale in x direction for Seehafer
-    length_scale_y: np.float64 = 2.0 * nresol_y * pixelsize_y
+    length_scale_y = 2.0 * nresol_y * pixelsize_y
     # Length scale in y direction for Seehafer
-    length_scale_x_norm: np.float64 = length_scale_x / length_scale
+    length_scale_x_norm = length_scale_x / length_scale
     # Normalised length scale in x direction for Seehafer
-    length_scale_y_norm: np.float64 = length_scale_y / length_scale
+    length_scale_y_norm = length_scale_y / length_scale
     # Normalised length scale in y direction for Seehafer
 
     if xmin != 0.0 or ymin != 0.0 or zmin != 0.0:
@@ -65,99 +65,63 @@ def magnetic_field(
         np.arange(nresol_z) * (zmax - zmin) / (nresol_z - 1) + zmin
     )
 
-    ratiodzls: np.float64 = deltaz / length_scale  # Normalised deltaz
+    ratiodzls = deltaz / length_scale  # Normalised deltaz
 
     # kx, ky arrays, coefficients for x and y in Fourier series
 
-    kx_arr: np.ndarray[np.float64, np.dtype[np.float64]] = (
-        np.arange(nf_max) * np.pi / length_scale_x_norm
-    )  # [0:nf_max]
+    kx_arr = np.arange(nf_max) * np.pi / length_scale_x_norm  # [0:nf_max]
 
-    ky_arr: np.ndarray[np.float64, np.dtype[np.float64]] = (
-        np.arange(nf_max) * np.pi / length_scale_y_norm
-    )  # [0:nf_max]
+    ky_arr = np.arange(nf_max) * np.pi / length_scale_y_norm  # [0:nf_max]
 
-    one_arr: np.ndarray[np.float64, np.dtype[np.float64]] = (
-        0.0 * np.arange(nf_max) + 1.0
-    )
+    one_arr = 0.0 * np.arange(nf_max) + 1.0
 
-    ky_grid: np.ndarray[np.float64, np.dtype[np.float64]] = np.outer(
-        ky_arr, one_arr
-    )  # [0:nf_max, 0:nf_max]
-    kx_grid: np.ndarray[np.float64, np.dtype[np.float64]] = np.outer(
-        one_arr, kx_arr
-    )  # [0:nf_max, 0:nf_max]
+    ky_grid = np.outer(ky_arr, one_arr)  # [0:nf_max, 0:nf_max]
+    kx_grid = np.outer(one_arr, kx_arr)  # [0:nf_max, 0:nf_max]
 
     # kx^2 + ky^2
 
-    k2_arr: np.ndarray[np.float64, np.dtype[np.float64]] = np.outer(
-        ky_arr**2, one_arr
-    ) + np.outer(one_arr, kx_arr**2)
+    k2_arr = np.outer(ky_arr**2, one_arr) + np.outer(one_arr, kx_arr**2)
     k2_arr[0, 0] = (np.pi / length_scale) ** 2
 
-    p_arr: np.ndarray[np.float64, np.dtype[np.float64]] = (
-        0.5 * ratiodzls * np.sqrt(k2_arr * (1.0 - a - a * b) - alpha**2)
-    )
-    q_arr: np.ndarray[np.float64, np.dtype[np.float64]] = (
-        0.5 * ratiodzls * np.sqrt(k2_arr * (1.0 - a + a * b) - alpha**2)
-    )
+    p_arr = 0.5 * ratiodzls * np.sqrt(k2_arr * (1.0 - a - a * b) - alpha**2)
+    q_arr = 0.5 * ratiodzls * np.sqrt(k2_arr * (1.0 - a + a * b) - alpha**2)
 
-    data_bz_seehafer: np.ndarray[np.float64, np.dtype[np.float64]] = mirror_magnetogram(
+    data_bz_seehafer = mirror_magnetogram(
         data_bz, xmin, xmax, ymin, ymax, nresol_x, nresol_y
     )
-    anm: np.ndarray[np.float64, np.dtype[np.float64]] = fft_coeff_seehafer(
+    anm = fft_coeff_seehafer(
         data_bz_seehafer, k2_arr, 2 * nresol_x, 2 * nresol_y, nf_max
     )
 
-    phi_arr: np.ndarray[np.float64, np.dtype[np.float64]] = np.zeros(
-        (nf_max, nf_max, nresol_z)
-    )
+    phi_arr = np.zeros((nf_max, nf_max, nresol_z))
     # [0:nf_max,0:nf_max, 0:nresol_z]
-    dphidz_arr: np.ndarray[np.float64, np.dtype[np.float64]] = np.zeros(
-        (nf_max, nf_max, nresol_z)
-    )  # [0:nf_max,0:nf_max, 0:nresol_z]
+    dphidz_arr = np.zeros((nf_max, nf_max, nresol_z))  # [0:nf_max,0:nf_max, 0:nresol_z]
 
     for iy in range(0, int(nf_max)):
         for ix in range(0, int(nf_max)):
-            q: np.float64 = q_arr[iy, ix]
-            p: np.float64 = p_arr[iy, ix]
+            q = q_arr[iy, ix]
+            p = p_arr[iy, ix]
             for iz in range(0, int(nresol_z)):
-                z: np.float64 = z_arr[iz]
+                z = z_arr[iz]
                 phi_arr[iy, ix, iz] = phi(z, p, q, z0, deltaz)
                 dphidz_arr[iy, ix, iz] = dphidz(z, p, q, z0, deltaz)
 
-    b_arr: np.ndarray[np.float64, np.dtype[np.float64]] = np.zeros(
-        (2 * nresol_y, 2 * nresol_x, nresol_z, 3)
-    )
+    b_arr = np.zeros((2 * nresol_y, 2 * nresol_x, nresol_z, 3))
 
-    sin_x: np.ndarray[np.float64, np.dtype[np.float64]] = np.sin(
-        np.outer(kx_arr, x_arr)
-    )
-    sin_y: np.ndarray[np.float64, np.dtype[np.float64]] = np.sin(
-        np.outer(ky_arr, y_arr)
-    )
-    cos_x: np.ndarray[np.float64, np.dtype[np.float64]] = np.cos(
-        np.outer(kx_arr, x_arr)
-    )
-    cos_y: np.ndarray[np.float64, np.dtype[np.float64]] = np.cos(
-        np.outer(ky_arr, y_arr)
-    )
+    sin_x = np.sin(np.outer(kx_arr, x_arr))
+    sin_y = np.sin(np.outer(ky_arr, y_arr))
+    cos_x = np.cos(np.outer(kx_arr, x_arr))
+    cos_y = np.cos(np.outer(ky_arr, y_arr))
 
     for iz in range(0, nresol_z):
-        coeffs: np.ndarray[np.float64, np.dtype[np.float64]] = np.multiply(
-            np.multiply(k2_arr, phi_arr[:, :, iz]), anm
-        )
+        coeffs = np.multiply(np.multiply(k2_arr, phi_arr[:, :, iz]), anm)
         # Componentwise multiplication, [0:nf_max, 0:nf_max]
         b_arr[:, :, iz, 2] = np.matmul(sin_y.T, np.matmul(coeffs, sin_x))
         # [0:2*nresol_y, 0:nf_max]*([0:nf_max, 0:nf_max]*[0:nf_max, 0:2*nresol_x]) = [0:2*nresol_y, 0:2*nresol_x]
 
-        coeffs1: np.ndarray[np.float64, np.dtype[np.float64]] = np.multiply(
-            np.multiply(anm, dphidz_arr[:, :, iz]), ky_grid
-        )
+        coeffs1 = np.multiply(np.multiply(anm, dphidz_arr[:, :, iz]), ky_grid)
         # Componentwise multiplication, [0:nf_max, 0:nf_max]
-        coeffs2: np.ndarray[np.float64, np.dtype[np.float64]] = alpha * np.multiply(
-            np.multiply(anm, phi_arr[:, :, iz]), kx_grid
-        )
+        coeffs2 = alpha * np.multiply(np.multiply(anm, phi_arr[:, :, iz]), kx_grid)
         # Componentwise multiplication, [0:nf_max, 0:nf_max]
         b_arr[:, :, iz, 0] = np.matmul(cos_y.T, np.matmul(coeffs1, sin_x)) - np.matmul(
             sin_y.T, np.matmul(coeffs2, cos_x)
@@ -167,13 +131,9 @@ def magnetic_field(
         # Fieldline3D program was written for order B = [Bx,By,Bz] with indexing [ix,iy,iz] but here we have indexing [iy,ix,iz]
         # so in order to be consistent we have to switch to order B = [Bx,By,Bz] such that fieldline3D program treats X and Y as Y and X consistently
 
-        coeffs3: np.ndarray[np.float64, np.dtype[np.float64]] = np.multiply(
-            np.multiply(anm, dphidz_arr[:, :, iz]), kx_grid
-        )
+        coeffs3 = np.multiply(np.multiply(anm, dphidz_arr[:, :, iz]), kx_grid)
         # Componentwise multiplication, [0:nf_max, 0:nf_max]
-        coeffs4: np.ndarray[np.float64, np.dtype[np.float64]] = alpha * np.multiply(
-            np.multiply(anm, phi_arr[:, :, iz]), ky_grid
-        )
+        coeffs4 = alpha * np.multiply(np.multiply(anm, phi_arr[:, :, iz]), ky_grid)
         # Componentwise multiplication, [0:nf_max, 0:nf_max]
         b_arr[:, :, iz, 1] = np.matmul(sin_y.T, np.matmul(coeffs3, cos_x)) + np.matmul(
             cos_y.T, np.matmul(coeffs4, sin_x)
@@ -216,7 +176,7 @@ def magnetic_field(
 def magnetic_field_low(
     data_bz: np.ndarray[np.float64, np.dtype[np.float64]],
     z0: np.float64,
-    deltaz: np.float64,
+    kappa: np.float64,
     a: float,
     b: float,
     alpha: float,
@@ -238,15 +198,15 @@ def magnetic_field_low(
     returns 3D magnetic field vector [By, Bx, Bz] calculated from
     series expansion using anm, phi and dphidz.
     """
-    kappa = 1.0 / z0
-    length_scale: np.float64 = np.float64(2.0)  # Normalising length scale for Seehafer
-    length_scale_x: np.float64 = 2.0 * nresol_x * pixelsize_x
+
+    length_scale = np.float64(2.0)  # Normalising length scale for Seehafer
+    length_scale_x = 2.0 * nresol_x * pixelsize_x
     # Length scale in x direction for Seehafer
-    length_scale_y: np.float64 = 2.0 * nresol_y * pixelsize_y
+    length_scale_y = 2.0 * nresol_y * pixelsize_y
     # Length scale in y direction for Seehafer
-    length_scale_x_norm: np.float64 = length_scale_x / length_scale
+    length_scale_x_norm = length_scale_x / length_scale
     # Normalised length scale in x direction for Seehafer
-    length_scale_y_norm: np.float64 = length_scale_y / length_scale
+    length_scale_y_norm = length_scale_y / length_scale
     # Normalised length scale in y direction for Seehafer
 
     if xmin != 0.0 or ymin != 0.0 or zmin != 0.0:
@@ -254,109 +214,68 @@ def magnetic_field_low(
     if not (xmax > 0.0 or ymax > 0.0 or zmax > 0.0):
         raise ValueError("Magnetrogram in wrong quadrant of Seehafer mirroring")
 
-    x_arr: np.ndarray[np.float64, np.dtype[np.float64]] = (
-        np.arange(2.0 * nresol_x) * 2.0 * xmax / (2.0 * nresol_x - 1) - xmax
-    )
-    y_arr: np.ndarray[np.float64, np.dtype[np.float64]] = (
-        np.arange(2.0 * nresol_y) * 2.0 * ymax / (2.0 * nresol_y - 1) - ymax
-    )
-    z_arr: np.ndarray[np.float64, np.dtype[np.float64]] = (
-        np.arange(nresol_z) * (zmax - zmin) / (nresol_z - 1) + zmin
-    )
+    x_arr = np.arange(2.0 * nresol_x) * 2.0 * xmax / (2.0 * nresol_x - 1) - xmax
+    y_arr = np.arange(2.0 * nresol_y) * 2.0 * ymax / (2.0 * nresol_y - 1) - ymax
+    z_arr = np.arange(nresol_z) * (zmax - zmin) / (nresol_z - 1) + zmin
 
-    ratiodzls: np.float64 = deltaz / length_scale  # Normalised deltaz
+    deltaz = 2.0 / kappa
+    ratiodzls = deltaz / length_scale  # Normalised deltaz
 
     # kx, ky arrays, coefficients for x and y in Fourier series
 
-    kx_arr: np.ndarray[np.float64, np.dtype[np.float64]] = (
-        np.arange(nf_max) * np.pi / length_scale_x_norm
-    )  # [0:nf_max]
+    kx_arr = np.arange(nf_max) * np.pi / length_scale_x_norm  # [0:nf_max]
 
-    ky_arr: np.ndarray[np.float64, np.dtype[np.float64]] = (
-        np.arange(nf_max) * np.pi / length_scale_y_norm
-    )  # [0:nf_max]
+    ky_arr = np.arange(nf_max) * np.pi / length_scale_y_norm  # [0:nf_max]
 
-    one_arr: np.ndarray[np.float64, np.dtype[np.float64]] = (
-        0.0 * np.arange(nf_max) + 1.0
-    )
+    one_arr = 0.0 * np.arange(nf_max) + 1.0
 
-    ky_grid: np.ndarray[np.float64, np.dtype[np.float64]] = np.outer(
-        ky_arr, one_arr
-    )  # [0:nf_max, 0:nf_max]
-    kx_grid: np.ndarray[np.float64, np.dtype[np.float64]] = np.outer(
-        one_arr, kx_arr
-    )  # [0:nf_max, 0:nf_max]
+    ky_grid = np.outer(ky_arr, one_arr)  # [0:nf_max, 0:nf_max]
+    kx_grid = np.outer(one_arr, kx_arr)  # [0:nf_max, 0:nf_max]
 
     # kx^2 + ky^2
 
-    k2_arr: np.ndarray[np.float64, np.dtype[np.float64]] = np.outer(
-        ky_arr**2, one_arr
-    ) + np.outer(one_arr, kx_arr**2)
+    k2_arr = np.outer(ky_arr**2, one_arr) + np.outer(one_arr, kx_arr**2)
     k2_arr[0, 0] = (np.pi / length_scale) ** 2
 
-    p_arr: np.ndarray[np.float64, np.dtype[np.float64]] = (
-        0.5 * ratiodzls * np.sqrt(k2_arr - alpha**2)
-    )
-    q_arr: np.ndarray[np.float64, np.dtype[np.float64]] = (
-        0.5 * ratiodzls * np.sqrt(k2_arr * a)
-    )
+    p_arr = 0.5 * ratiodzls * np.sqrt(k2_arr - alpha**2)
+    q_arr = 0.5 * ratiodzls * np.sqrt(k2_arr * a)
 
-    data_bz_seehafer: np.ndarray[np.float64, np.dtype[np.float64]] = mirror_magnetogram(
+    data_bz_seehafer = mirror_magnetogram(
         data_bz, xmin, xmax, ymin, ymax, nresol_x, nresol_y
     )
-    anm: np.ndarray[np.float64, np.dtype[np.float64]] = fft_coeff_seehafer(
+    anm = fft_coeff_seehafer(
         data_bz_seehafer, k2_arr, 2 * nresol_x, 2 * nresol_y, nf_max
     )
 
-    phi_arr: np.ndarray[np.float64, np.dtype[np.float64]] = np.zeros(
-        (nf_max, nf_max, nresol_z)
-    )
+    phi_arr = np.zeros((nf_max, nf_max, nresol_z))
     # [0:nf_max,0:nf_max, 0:nresol_z]
-    dphidz_arr: np.ndarray[np.float64, np.dtype[np.float64]] = np.zeros(
-        (nf_max, nf_max, nresol_z)
-    )  # [0:nf_max,0:nf_max, 0:nresol_z]
+    dphidz_arr = np.zeros((nf_max, nf_max, nresol_z))  # [0:nf_max,0:nf_max, 0:nresol_z]
 
     for iy in range(0, int(nf_max)):
         for ix in range(0, int(nf_max)):
-            q: np.float64 = q_arr[iy, ix]
-            p: np.float64 = p_arr[iy, ix]
+            q = q_arr[iy, ix]
+            p = p_arr[iy, ix]
             for iz in range(0, int(nresol_z)):
-                z: np.float64 = z_arr[iz]
+                z = z_arr[iz]
                 phi_arr[iy, ix, iz] = phi_low(z, p, q, kappa)
                 dphidz_arr[iy, ix, iz] = dphidz_low(z, p, q, kappa)
 
-    b_arr: np.ndarray[np.float64, np.dtype[np.float64]] = np.zeros(
-        (2 * nresol_y, 2 * nresol_x, nresol_z, 3)
-    )
+    b_arr = np.zeros((2 * nresol_y, 2 * nresol_x, nresol_z, 3))
 
-    sin_x: np.ndarray[np.float64, np.dtype[np.float64]] = np.sin(
-        np.outer(kx_arr, x_arr)
-    )
-    sin_y: np.ndarray[np.float64, np.dtype[np.float64]] = np.sin(
-        np.outer(ky_arr, y_arr)
-    )
-    cos_x: np.ndarray[np.float64, np.dtype[np.float64]] = np.cos(
-        np.outer(kx_arr, x_arr)
-    )
-    cos_y: np.ndarray[np.float64, np.dtype[np.float64]] = np.cos(
-        np.outer(ky_arr, y_arr)
-    )
+    sin_x = np.sin(np.outer(kx_arr, x_arr))
+    sin_y = np.sin(np.outer(ky_arr, y_arr))
+    cos_x = np.cos(np.outer(kx_arr, x_arr))
+    cos_y = np.cos(np.outer(ky_arr, y_arr))
 
     for iz in range(0, nresol_z):
-        coeffs: np.ndarray[np.float64, np.dtype[np.float64]] = np.multiply(
-            np.multiply(k2_arr, phi_arr[:, :, iz]), anm
-        )
+        coeffs = np.multiply(np.multiply(k2_arr, phi_arr[:, :, iz]), anm)
         # Componentwise multiplication, [0:nf_max, 0:nf_max]
         b_arr[:, :, iz, 2] = np.matmul(sin_y.T, np.matmul(coeffs, sin_x))
         # [0:2*nresol_y, 0:nf_max]*([0:nf_max, 0:nf_max]*[0:nf_max, 0:2*nresol_x]) = [0:2*nresol_y, 0:2*nresol_x]
 
-        coeffs1: np.ndarray[np.float64, np.dtype[np.float64]] = np.multiply(
-            np.multiply(anm, dphidz_arr[:, :, iz]), ky_grid
-        )
+        coeffs1 = np.multiply(np.multiply(anm, dphidz_arr[:, :, iz]), ky_grid)
         # Componentwise multiplication, [0:nf_max, 0:nf_max]
-        coeffs2: np.ndarray[np.float64, np.dtype[np.float64]] = alpha * np.multiply(
-            np.multiply(anm, phi_arr[:, :, iz]), kx_grid
-        )
+        coeffs2 = alpha * np.multiply(np.multiply(anm, phi_arr[:, :, iz]), kx_grid)
         # Componentwise multiplication, [0:nf_max, 0:nf_max]
         b_arr[:, :, iz, 0] = np.matmul(cos_y.T, np.matmul(coeffs1, sin_x)) - np.matmul(
             sin_y.T, np.matmul(coeffs2, cos_x)
@@ -366,13 +285,9 @@ def magnetic_field_low(
         # Fieldline3D program was written for order B = [Bx,By,Bz] with indexing [ix,iy,iz] but here we have indexing [iy,ix,iz]
         # so in order to be consistent we have to switch to order B = [Bx,By,Bz] such that fieldline3D program treats X and Y as Y and X consistently
 
-        coeffs3: np.ndarray[np.float64, np.dtype[np.float64]] = np.multiply(
-            np.multiply(anm, dphidz_arr[:, :, iz]), kx_grid
-        )
+        coeffs3 = np.multiply(np.multiply(anm, dphidz_arr[:, :, iz]), kx_grid)
         # Componentwise multiplication, [0:nf_max, 0:nf_max]
-        coeffs4: np.ndarray[np.float64, np.dtype[np.float64]] = alpha * np.multiply(
-            np.multiply(anm, phi_arr[:, :, iz]), ky_grid
-        )
+        coeffs4 = alpha * np.multiply(np.multiply(anm, phi_arr[:, :, iz]), ky_grid)
         # Componentwise multiplication, [0:nf_max, 0:nf_max]
         b_arr[:, :, iz, 1] = np.matmul(sin_y.T, np.matmul(coeffs3, cos_x)) + np.matmul(
             cos_y.T, np.matmul(coeffs4, sin_x)
@@ -409,14 +324,14 @@ def bz_partial_derivatives(
     phi and dphidz.
     """
 
-    length_scale: float = 2.0  # Normalising length scale for Seehafer
-    length_scale_x: float = 2.0 * nresol_x * float(pixelsize_x)
+    length_scale = 2.0  # Normalising length scale for Seehafer
+    length_scale_x = 2.0 * nresol_x * float(pixelsize_x)
     # Length scale in x direction for Seehafer
-    length_scale_y: float = 2.0 * nresol_y * float(pixelsize_y)
+    length_scale_y = 2.0 * nresol_y * float(pixelsize_y)
     # Length scale in y direction for Seehafer
-    length_scale_x_norm: float = length_scale_x / length_scale
+    length_scale_x_norm = length_scale_x / length_scale
     # Normalised length scale in x direction for Seehafer
-    length_scale_y_norm: float = length_scale_y / length_scale
+    length_scale_y_norm = length_scale_y / length_scale
     # Normalised length scale in y direction for Seehafer
 
     if xmin != 0.0 or ymin != 0.0 or zmin != 0.0:
@@ -424,104 +339,66 @@ def bz_partial_derivatives(
     if not (xmax > 0.0 or ymax > 0.0 or zmax > 0.0):
         raise ValueError("Magnetrogram in wrong quadrant of Seehafer mirroring")
 
-    x_arr: np.ndarray[np.float64, np.dtype[np.float64]] = (
-        np.arange(2.0 * nresol_x) * 2.0 * xmax / (2.0 * nresol_x - 1) - xmax
-    )
-    y_arr: np.ndarray[np.float64, np.dtype[np.float64]] = (
-        np.arange(2.0 * nresol_y) * 2.0 * ymax / (2.0 * nresol_y - 1) - ymax
-    )
-    z_arr: np.ndarray[np.float64, np.dtype[np.float64]] = (
-        np.arange(nresol_z) * (zmax - zmin) / (nresol_z - 1) + zmin
-    )
+    x_arr = np.arange(2.0 * nresol_x) * 2.0 * xmax / (2.0 * nresol_x - 1) - xmax
+    y_arr = np.arange(2.0 * nresol_y) * 2.0 * ymax / (2.0 * nresol_y - 1) - ymax
+    z_arr = np.arange(nresol_z) * (zmax - zmin) / (nresol_z - 1) + zmin
 
-    ratiodzls: np.float64 = deltaz / length_scale  # Normalised deltaz
+    ratiodzls = deltaz / length_scale  # Normalised deltaz
 
     # kx, ky arrays, coefficients for x and y in Fourier series
 
-    kx_arr: np.ndarray[np.float64, np.dtype[np.float64]] = (
-        np.arange(nf_max) * np.pi / length_scale_x_norm
-    )  # [0:nf_max]
-    ky_arr: np.ndarray[np.float64, np.dtype[np.float64]] = (
-        np.arange(nf_max) * np.pi / length_scale_y_norm
-    )  # [0:nf_max]
+    kx_arr = np.arange(nf_max) * np.pi / length_scale_x_norm  # [0:nf_max]
+    ky_arr = np.arange(nf_max) * np.pi / length_scale_y_norm  # [0:nf_max]
 
-    one_arr: np.ndarray[np.float64, np.dtype[np.float64]] = (
-        0.0 * np.arange(nf_max) + 1.0
-    )
+    one_arr = 0.0 * np.arange(nf_max) + 1.0
 
-    ky_grid: np.ndarray[np.float64, np.dtype[np.float64]] = np.outer(
-        ky_arr, one_arr
-    )  # [0:nf_max, 0:nf_max]
-    kx_grid: np.ndarray[np.float64, np.dtype[np.float64]] = np.outer(
-        one_arr, kx_arr
-    )  # [0:nf_max, 0:nf_max]
+    ky_grid = np.outer(ky_arr, one_arr)  # [0:nf_max, 0:nf_max]
+    kx_grid = np.outer(one_arr, kx_arr)  # [0:nf_max, 0:nf_max]
 
     # kx^2 + ky^2
 
-    k2_arr: np.ndarray[np.float64, np.dtype[np.float64]] = np.outer(
-        ky_arr**2, one_arr
-    ) + np.outer(one_arr, kx_arr**2)
+    k2_arr = np.outer(ky_arr**2, one_arr) + np.outer(one_arr, kx_arr**2)
     k2_arr[0, 0] = (np.pi / length_scale) ** 2
 
-    p_arr: np.ndarray[np.float64, np.dtype[np.float64]] = (
-        0.5 * ratiodzls * np.sqrt(k2_arr * (1.0 - a - a * b) - alpha**2)
-    )
-    q_arr: np.ndarray[np.float64, np.dtype[np.float64]] = (
-        0.5 * ratiodzls * np.sqrt(k2_arr * (1.0 - a + a * b) - alpha**2)
-    )
+    p_arr = 0.5 * ratiodzls * np.sqrt(k2_arr * (1.0 - a - a * b) - alpha**2)
+    q_arr = 0.5 * ratiodzls * np.sqrt(k2_arr * (1.0 - a + a * b) - alpha**2)
 
-    data_bz_seehafer: np.ndarray[np.float64, np.dtype[np.float64]] = mirror_magnetogram(
+    data_bz_seehafer = mirror_magnetogram(
         data_bz, xmin, xmax, ymin, ymax, nresol_x, nresol_y
     )
-    anm: np.ndarray[np.float64, np.dtype[np.float64]] = fft_coeff_seehafer(
+    anm = fft_coeff_seehafer(
         data_bz_seehafer, k2_arr, 2 * nresol_x, 2 * nresol_y, nf_max
     )
 
-    phi_arr: np.ndarray[np.float64, np.dtype[np.float64]] = np.zeros(
-        (nf_max, nf_max, nresol_z)
-    )  # [0:nf_max,0:nf_max, 0:nresol_z]
-    dphidz_arr: np.ndarray[np.float64, np.dtype[np.float64]] = np.zeros(
-        (nf_max, nf_max, nresol_z)
-    )  # [0:nf_max,0:nf_max, 0:nresol_z]
+    phi_arr = np.zeros((nf_max, nf_max, nresol_z))  # [0:nf_max,0:nf_max, 0:nresol_z]
+    dphidz_arr = np.zeros((nf_max, nf_max, nresol_z))  # [0:nf_max,0:nf_max, 0:nresol_z]
 
     for iy in range(0, nf_max):
         for ix in range(0, nf_max):
-            q: np.float64 = q_arr[iy, ix]
-            p: np.float64 = p_arr[iy, ix]
+            q = q_arr[iy, ix]
+            p = p_arr[iy, ix]
             for iz in range(0, nresol_z):
-                z: np.float64 = z_arr[iz]
+                z = z_arr[iz]
                 phi_arr[iy, ix, iz] = phi(z, p, q, z0, deltaz)
                 dphidz_arr[iy, ix, iz] = dphidz(z, p, q, z0, deltaz)
 
-    bz_derivs: np.ndarray[np.float64, np.dtype[np.float64]] = np.zeros(
-        (2 * nresol_y, 2 * nresol_x, nresol_z, 3)
-    )
+    bz_derivs = np.zeros((2 * nresol_y, 2 * nresol_x, nresol_z, 3))
 
-    sin_x: np.ndarray[np.float64, np.dtype[np.float64]] = np.sin(
-        np.outer(kx_arr, x_arr)
-    )
-    sin_y: np.ndarray[np.float64, np.dtype[np.float64]] = np.sin(
-        np.outer(ky_arr, y_arr)
-    )
-    cos_x: np.ndarray[np.float64, np.dtype[np.float64]] = np.cos(
-        np.outer(kx_arr, x_arr)
-    )
-    cos_y: np.ndarray[np.float64, np.dtype[np.float64]] = np.cos(
-        np.outer(ky_arr, y_arr)
-    )
+    sin_x = np.sin(np.outer(kx_arr, x_arr))
+    sin_y = np.sin(np.outer(ky_arr, y_arr))
+    cos_x = np.cos(np.outer(kx_arr, x_arr))
+    cos_y = np.cos(np.outer(ky_arr, y_arr))
 
     for iz in range(0, nresol_z):
-        coeffs: np.ndarray[np.float64, np.dtype[np.float64]] = np.multiply(
-            np.multiply(k2_arr, dphidz_arr[:, :, iz]), anm
-        )
+        coeffs = np.multiply(np.multiply(k2_arr, dphidz_arr[:, :, iz]), anm)
         bz_derivs[:, :, iz, 2] = np.matmul(sin_y.T, np.matmul(coeffs, sin_x))
 
-        coeffs2: np.ndarray[np.float64, np.dtype[np.float64]] = np.multiply(
+        coeffs2 = np.multiply(
             np.multiply(np.multiply(k2_arr, phi_arr[:, :, iz]), anm), kx_grid
         )
         bz_derivs[:, :, iz, 1] = np.matmul(sin_y.T, np.matmul(coeffs2, cos_x))
 
-        coeffs3: np.ndarray[np.float64, np.dtype[np.float64]] = np.multiply(
+        coeffs3 = np.multiply(
             np.multiply(np.multiply(k2_arr, phi_arr[:, :, iz]), anm),
             ky_grid,
         )
@@ -552,7 +429,7 @@ def bz_partial_derivatives(
 def bz_partial_derivatives_low(
     data_bz: np.ndarray[np.float64, np.dtype[np.float64]],
     z0: np.float64,
-    deltaz: np.float64,
+    kappa: np.float64,
     a: float,
     b: float,
     alpha: float,
@@ -575,15 +452,15 @@ def bz_partial_derivatives_low(
     [dBzdy, dBzdx, dBzdz] calculated from series expansion using anm,
     phi and dphidz.
     """
-    kappa = 1.0 / z0
-    length_scale: float = 2.0  # Normalising length scale for Seehafer
-    length_scale_x: float = 2.0 * nresol_x * float(pixelsize_x)
+    deltaz = 2.0 / kappa
+    length_scale = 2.0  # Normalising length scale for Seehafer
+    length_scale_x = 2.0 * nresol_x * float(pixelsize_x)
     # Length scale in x direction for Seehafer
-    length_scale_y: float = 2.0 * nresol_y * float(pixelsize_y)
+    length_scale_y = 2.0 * nresol_y * float(pixelsize_y)
     # Length scale in y direction for Seehafer
-    length_scale_x_norm: float = length_scale_x / length_scale
+    length_scale_x_norm = length_scale_x / length_scale
     # Normalised length scale in x direction for Seehafer
-    length_scale_y_norm: float = length_scale_y / length_scale
+    length_scale_y_norm = length_scale_y / length_scale
     # Normalised length scale in y direction for Seehafer
 
     if xmin != 0.0 or ymin != 0.0 or zmin != 0.0:
@@ -591,104 +468,66 @@ def bz_partial_derivatives_low(
     if not (xmax > 0.0 or ymax > 0.0 or zmax > 0.0):
         raise ValueError("Magnetrogram in wrong quadrant of Seehafer mirroring")
 
-    x_arr: np.ndarray[np.float64, np.dtype[np.float64]] = (
-        np.arange(2.0 * nresol_x) * 2.0 * xmax / (2.0 * nresol_x - 1) - xmax
-    )
-    y_arr: np.ndarray[np.float64, np.dtype[np.float64]] = (
-        np.arange(2.0 * nresol_y) * 2.0 * ymax / (2.0 * nresol_y - 1) - ymax
-    )
-    z_arr: np.ndarray[np.float64, np.dtype[np.float64]] = (
-        np.arange(nresol_z) * (zmax - zmin) / (nresol_z - 1) + zmin
-    )
+    x_arr = np.arange(2.0 * nresol_x) * 2.0 * xmax / (2.0 * nresol_x - 1) - xmax
+    y_arr = np.arange(2.0 * nresol_y) * 2.0 * ymax / (2.0 * nresol_y - 1) - ymax
+    z_arr = np.arange(nresol_z) * (zmax - zmin) / (nresol_z - 1) + zmin
 
-    ratiodzls: np.float64 = deltaz / length_scale  # Normalised deltaz
+    ratiodzls = deltaz / length_scale  # Normalised deltaz
 
     # kx, ky arrays, coefficients for x and y in Fourier series
 
-    kx_arr: np.ndarray[np.float64, np.dtype[np.float64]] = (
-        np.arange(nf_max) * np.pi / length_scale_x_norm
-    )  # [0:nf_max]
-    ky_arr: np.ndarray[np.float64, np.dtype[np.float64]] = (
-        np.arange(nf_max) * np.pi / length_scale_y_norm
-    )  # [0:nf_max]
+    kx_arr = np.arange(nf_max) * np.pi / length_scale_x_norm  # [0:nf_max]
+    ky_arr = np.arange(nf_max) * np.pi / length_scale_y_norm  # [0:nf_max]
 
-    one_arr: np.ndarray[np.float64, np.dtype[np.float64]] = (
-        0.0 * np.arange(nf_max) + 1.0
-    )
+    one_arr = 0.0 * np.arange(nf_max) + 1.0
 
-    ky_grid: np.ndarray[np.float64, np.dtype[np.float64]] = np.outer(
-        ky_arr, one_arr
-    )  # [0:nf_max, 0:nf_max]
-    kx_grid: np.ndarray[np.float64, np.dtype[np.float64]] = np.outer(
-        one_arr, kx_arr
-    )  # [0:nf_max, 0:nf_max]
+    ky_grid = np.outer(ky_arr, one_arr)  # [0:nf_max, 0:nf_max]
+    kx_grid = np.outer(one_arr, kx_arr)  # [0:nf_max, 0:nf_max]
 
     # kx^2 + ky^2
 
-    k2_arr: np.ndarray[np.float64, np.dtype[np.float64]] = np.outer(
-        ky_arr**2, one_arr
-    ) + np.outer(one_arr, kx_arr**2)
+    k2_arr = np.outer(ky_arr**2, one_arr) + np.outer(one_arr, kx_arr**2)
     k2_arr[0, 0] = (np.pi / length_scale) ** 2
 
-    p_arr: np.ndarray[np.float64, np.dtype[np.float64]] = (
-        0.5 * ratiodzls * np.sqrt(k2_arr - alpha**2)
-    )
-    q_arr: np.ndarray[np.float64, np.dtype[np.float64]] = (
-        0.5 * ratiodzls * np.sqrt(k2_arr * a)
-    )
+    p_arr = 0.5 * ratiodzls * np.sqrt(k2_arr - alpha**2)
+    q_arr = 0.5 * ratiodzls * np.sqrt(k2_arr * a)
 
-    data_bz_seehafer: np.ndarray[np.float64, np.dtype[np.float64]] = mirror_magnetogram(
+    data_bz_seehafer = mirror_magnetogram(
         data_bz, xmin, xmax, ymin, ymax, nresol_x, nresol_y
     )
-    anm: np.ndarray[np.float64, np.dtype[np.float64]] = fft_coeff_seehafer(
+    anm = fft_coeff_seehafer(
         data_bz_seehafer, k2_arr, 2 * nresol_x, 2 * nresol_y, nf_max
     )
 
-    phi_arr: np.ndarray[np.float64, np.dtype[np.float64]] = np.zeros(
-        (nf_max, nf_max, nresol_z)
-    )  # [0:nf_max,0:nf_max, 0:nresol_z]
-    dphidz_arr: np.ndarray[np.float64, np.dtype[np.float64]] = np.zeros(
-        (nf_max, nf_max, nresol_z)
-    )  # [0:nf_max,0:nf_max, 0:nresol_z]
+    phi_arr = np.zeros((nf_max, nf_max, nresol_z))  # [0:nf_max,0:nf_max, 0:nresol_z]
+    dphidz_arr = np.zeros((nf_max, nf_max, nresol_z))  # [0:nf_max,0:nf_max, 0:nresol_z]
 
     for iy in range(0, nf_max):
         for ix in range(0, nf_max):
-            q: np.float64 = q_arr[iy, ix]
-            p: np.float64 = p_arr[iy, ix]
+            q = q_arr[iy, ix]
+            p = p_arr[iy, ix]
             for iz in range(0, nresol_z):
-                z: np.float64 = z_arr[iz]
+                z = z_arr[iz]
                 phi_arr[iy, ix, iz] = phi_low(z, p, q, kappa)
                 dphidz_arr[iy, ix, iz] = dphidz_low(z, p, q, kappa)
 
-    bz_derivs: np.ndarray[np.float64, np.dtype[np.float64]] = np.zeros(
-        (2 * nresol_y, 2 * nresol_x, nresol_z, 3)
-    )
+    bz_derivs = np.zeros((2 * nresol_y, 2 * nresol_x, nresol_z, 3))
 
-    sin_x: np.ndarray[np.float64, np.dtype[np.float64]] = np.sin(
-        np.outer(kx_arr, x_arr)
-    )
-    sin_y: np.ndarray[np.float64, np.dtype[np.float64]] = np.sin(
-        np.outer(ky_arr, y_arr)
-    )
-    cos_x: np.ndarray[np.float64, np.dtype[np.float64]] = np.cos(
-        np.outer(kx_arr, x_arr)
-    )
-    cos_y: np.ndarray[np.float64, np.dtype[np.float64]] = np.cos(
-        np.outer(ky_arr, y_arr)
-    )
+    sin_x = np.sin(np.outer(kx_arr, x_arr))
+    sin_y = np.sin(np.outer(ky_arr, y_arr))
+    cos_x = np.cos(np.outer(kx_arr, x_arr))
+    cos_y = np.cos(np.outer(ky_arr, y_arr))
 
     for iz in range(0, nresol_z):
-        coeffs: np.ndarray[np.float64, np.dtype[np.float64]] = np.multiply(
-            np.multiply(k2_arr, dphidz_arr[:, :, iz]), anm
-        )
+        coeffs = np.multiply(np.multiply(k2_arr, dphidz_arr[:, :, iz]), anm)
         bz_derivs[:, :, iz, 2] = np.matmul(sin_y.T, np.matmul(coeffs, sin_x))
 
-        coeffs2: np.ndarray[np.float64, np.dtype[np.float64]] = np.multiply(
+        coeffs2 = np.multiply(
             np.multiply(np.multiply(k2_arr, phi_arr[:, :, iz]), anm), kx_grid
         )
         bz_derivs[:, :, iz, 1] = np.matmul(sin_y.T, np.matmul(coeffs2, cos_x))
 
-        coeffs3: np.ndarray[np.float64, np.dtype[np.float64]] = np.multiply(
+        coeffs3 = np.multiply(
             np.multiply(np.multiply(k2_arr, phi_arr[:, :, iz]), anm),
             ky_grid,
         )

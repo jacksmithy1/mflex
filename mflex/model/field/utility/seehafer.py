@@ -18,9 +18,7 @@ def mirror_magnetogram(
     Four times the size of original photospheric Bz vector.
     """
 
-    b_arr: np.ndarray[np.float64, np.dtype[np.float64]] = np.zeros(
-        (2 * nresol_y, 2 * nresol_x)
-    )  # [0:2*nresol_y,0:2*nresol_x]
+    b_arr = np.zeros((2 * nresol_y, 2 * nresol_x))  # [0:2*nresol_y,0:2*nresol_x]
     # Y-axis size first as this corresponds to number of rows, then X-Axis size corresponding t number of columns
 
     if xmin != 0.0 or ymin != 0.0 or not (xmax > 0.0 or ymax > 0.0):

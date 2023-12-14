@@ -15,18 +15,10 @@ def plot_magnetogram_boundary(
     Returns 2D plot of photospheric magnetic field at z=0.
     """
 
-    x_arr: np.ndarray[np.float64, np.dtype[np.float64]] = (
-        np.arange(nresol_x) * (nresol_x) / (nresol_x - 1)
-    )
-    y_arr: np.ndarray[np.float64, np.dtype[np.float64]] = (
-        np.arange(nresol_y) * (nresol_y) / (nresol_y - 1)
-    )
-    x_plot: np.ndarray[np.float64, np.dtype[np.float64]] = np.outer(
-        y_arr, np.ones(nresol_x)
-    )
-    y_plot: np.ndarray[np.float64, np.dtype[np.float64]] = np.outer(
-        x_arr, np.ones(nresol_y)
-    ).T
+    x_arr = np.arange(nresol_x) * (nresol_x) / (nresol_x - 1)
+    y_arr = np.arange(nresol_y) * (nresol_y) / (nresol_y - 1)
+    x_plot = np.outer(y_arr, np.ones(nresol_x))
+    y_plot = np.outer(x_arr, np.ones(nresol_y)).T
 
     fig = plt.figure()
     ax = fig.add_subplot(111)
@@ -51,12 +43,8 @@ def plot_magnetogram_boundary_3D(
     Returns 3D plot of photospheric magnetic field excluding field line extrapolation.
     """
 
-    x_arr: np.ndarray[np.float64, np.dtype[np.float64]] = (
-        np.arange(2 * nresol_x) * (xmax - xmin) / (2 * nresol_x - 1) + xmin
-    )
-    y_arr: np.ndarray[np.float64, np.dtype[np.float64]] = (
-        np.arange(2 * nresol_y) * (ymax - ymin) / (2 * nresol_y - 1) + ymin
-    )
+    x_arr = np.arange(2 * nresol_x) * (xmax - xmin) / (2 * nresol_x - 1) + xmin
+    y_arr = np.arange(2 * nresol_y) * (ymax - ymin) / (2 * nresol_y - 1) + ymin
     x_grid, y_grid = np.meshgrid(x_arr, y_arr)
     fig = plt.figure()
     ax = fig.add_subplot(111, projection="3d")
@@ -102,16 +90,10 @@ def plot_fieldlines_grid(
     Returns 3D plot of photospheric magnetic field including field line extrapolation.
     """
 
-    data_bz: np.ndarray[np.float64, np.dtype[np.float64]] = data_b[:, :, 0, 2]
-    x_arr: np.ndarray[np.float64, np.dtype[np.float64]] = (
-        np.arange(2 * nresol_x) * (xmax - xmin) / (2 * nresol_x - 1) + xmin
-    )
-    y_arr: np.ndarray[np.float64, np.dtype[np.float64]] = (
-        np.arange(2 * nresol_y) * (ymax - ymin) / (2 * nresol_y - 1) + ymin
-    )
-    z_arr: np.ndarray[np.float64, np.dtype[np.float64]] = (
-        np.arange(nresol_z) * (zmax - zmin) / (nresol_z - 1) + zmin
-    )
+    data_bz = data_b[:, :, 0, 2]
+    x_arr = np.arange(2 * nresol_x) * (xmax - xmin) / (2 * nresol_x - 1) + xmin
+    y_arr = np.arange(2 * nresol_y) * (ymax - ymin) / (2 * nresol_y - 1) + ymin
+    z_arr = np.arange(nresol_z) * (zmax - zmin) / (nresol_z - 1) + zmin
     x_grid, y_grid = np.meshgrid(x_arr, y_arr)
 
     fig = plt.figure()
@@ -133,12 +115,12 @@ def plot_fieldlines_grid(
     # ax.view_init(30, 240, 0)
     ax.set_box_aspect((xmax, ymax, 1))
 
-    x_0: float = 1.0 * 10**-8
-    y_0: float = 1.0 * 10**-8
-    dx: float = 0.05
-    dy: float = 0.05
-    nlinesmaxx: int = math.floor(xmax / dx)
-    nlinesmaxy: int = math.floor(ymax / dy)
+    x_0 = 1.0 * 10**-8
+    y_0 = 1.0 * 10**-8
+    dx = 0.05
+    dy = 0.05
+    nlinesmaxx = math.floor(xmax / dx)
+    nlinesmaxy = math.floor(ymax / dy)
 
     # Limit fieldline plot to original data size (rather than Seehafer size)
     boxedges: np.ndarray[np.float64, np.dtype[np.float64]] = np.zeros((2, 3))
@@ -153,13 +135,13 @@ def plot_fieldlines_grid(
 
     for ilinesx in range(0, nlinesmaxx):
         for ilinesy in range(0, nlinesmaxy):
-            x_start: float = x_0 + dx * ilinesx
-            y_start: float = y_0 + dy * ilinesy
+            x_start = x_0 + dx * ilinesx
+            y_start = y_0 + dy * ilinesy
 
             if data_bz[int(y_start), int(x_start)] < 0.0:
                 h1 = -h1
 
-            ystart: List[float] = [y_start, x_start, 0.0]
+            ystart = [y_start, x_start, 0.0]
             # Fieldline3D expects startpt, BField, Row values, Column values so we need to give Y first, then X
             fieldline: np.ndarray[np.float64, np.dtype[np.float64]] = fieldline3d(
                 ystart,
@@ -242,21 +224,16 @@ def plot_fieldlines_polar(
     b: float,
     alpha: float,
     nf_max: float,
+    name: str,
 ):
     """
     Returns 3D plot of photospheric magnetic field including field line extrapolation.
     """
 
-    data_bz: np.ndarray[np.float64, np.dtype[np.float64]] = data_b[:, :, 0, 2]
-    x_arr: np.ndarray[np.float64, np.dtype[np.float64]] = (
-        np.arange(2 * nresol_x) * (xmax - xmin) / (2 * nresol_x - 1) + xmin
-    )
-    y_arr: np.ndarray[np.float64, np.dtype[np.float64]] = (
-        np.arange(2 * nresol_y) * (ymax - ymin) / (2 * nresol_y - 1) + ymin
-    )
-    z_arr: np.ndarray[np.float64, np.dtype[np.float64]] = (
-        np.arange(nresol_z) * (zmax - zmin) / (nresol_z - 1) + zmin
-    )
+    data_bz = data_b[:, :, 0, 2]
+    x_arr = np.arange(2 * nresol_x) * (xmax - xmin) / (2 * nresol_x - 1) + xmin
+    y_arr = np.arange(2 * nresol_y) * (ymax - ymin) / (2 * nresol_y - 1) + ymin
+    z_arr = np.arange(nresol_z) * (zmax - zmin) / (nresol_z - 1) + zmin
     x_grid, y_grid = np.meshgrid(x_arr, y_arr)
 
     fig = plt.figure()
@@ -279,12 +256,12 @@ def plot_fieldlines_polar(
 
     ax.set_box_aspect((1, 1, 1))
 
-    nlinesmaxr: int = 2
-    nlinesmaxphi: int = 10
-    x_0: float = 1.2 / np.pi + 1.0
-    y_0: float = 1.2 / np.pi + 1.0
-    dr: float = 1.0 / 2.0 * np.sqrt(1 / 10.0) / (nlinesmaxr + 1.0)
-    dphi: float = 2.0 * np.pi / nlinesmaxphi
+    nlinesmaxr = 2
+    nlinesmaxphi = 10
+    x_0 = 1.2 / np.pi + 1.0
+    y_0 = 1.2 / np.pi + 1.0
+    dr = 1.0 / 2.0 * np.sqrt(1 / 10.0) / (nlinesmaxr + 1.0)
+    dphi = 2.0 * np.pi / nlinesmaxphi
 
     # Limit fieldline plot to original data size (rather than Seehafer size)
     boxedges: np.ndarray[np.float64, np.dtype[np.float64]] = np.zeros((2, 3))
@@ -299,15 +276,15 @@ def plot_fieldlines_polar(
 
     for ilinesr in range(0, nlinesmaxr):
         for ilinesphi in range(0, nlinesmaxphi):
-            x_start: float = x_0 + (ilinesr + 1.0) * dr * np.cos(ilinesphi * dphi)
-            y_start: float = y_0 + (ilinesr + 1.0) * dr * np.sin(ilinesphi * dphi)
+            x_start = x_0 + (ilinesr + 1.0) * dr * np.cos(ilinesphi * dphi)
+            y_start = y_0 + (ilinesr + 1.0) * dr * np.sin(ilinesphi * dphi)
 
             if data_bz[int(y_start), int(x_start)] < 0.0:
                 h1 = -h1
 
-            ystart: List[float] = [y_start, x_start, 0.0]
+            ystart = [y_start, x_start, 0.0]
             # Fieldline3D expects startpt, BField, Row values, Column values so we need to give Y first, then X
-            fieldline: np.ndarray[np.float64, np.dtype[np.float64]] = fieldline3d(
+            fieldline = fieldline3d(
                 ystart,
                 data_b,
                 y_arr,
@@ -324,15 +301,9 @@ def plot_fieldlines_polar(
             )  # , periodicity='xy')
 
             # Plot fieldlines
-            fieldline_x: np.ndarray[np.float64, np.dtype[np.float64]] = np.zeros(
-                len(fieldline)
-            )
-            fieldline_y: np.ndarray[np.float64, np.dtype[np.float64]] = np.zeros(
-                len(fieldline)
-            )
-            fieldline_z: np.ndarray[np.float64, np.dtype[np.float64]] = np.zeros(
-                len(fieldline)
-            )
+            fieldline_x = np.zeros(len(fieldline))
+            fieldline_y = np.zeros(len(fieldline))
+            fieldline_z = np.zeros(len(fieldline))
             fieldline_x[:] = fieldline[:, 0]
             fieldline_y[:] = fieldline[:, 1]
             fieldline_z[:] = fieldline[:, 2]
@@ -347,11 +318,11 @@ def plot_fieldlines_polar(
                 zorder=4000,
             )
 
-    plotname = "/Users/lilli/Desktop/mflex/nw19/figure3c1.png"
+    plotname = "/Users/lilli/Desktop/mflex/nw2019_paper/figure3" + name + ".png"
     plt.savefig(plotname, dpi=300)
 
     ax.view_init(0, -90)
-    plotname = "/Users/lilli/Desktop/mflex/nw19/figure4c1.png"
+    plotname = "/Users/lilli/Desktop/mflex/nw2019_paper/figure4" + name + ".png"
     plt.savefig(plotname, dpi=300)
 
     """current_time = datetime.now()

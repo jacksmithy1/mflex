@@ -24,44 +24,44 @@ from datetime import datetime
 
 # code_to_profile = """
 
-path_blos: str = (
+path_blos = (
     "/Users/lilli/Desktop/SOAR/obs/solo_L2_phi-hrt-blos_20220307T000609_V01.fits"
 )
 data = read_fits_soar(path_blos)
 # data = read_issi_rmhd("data/RMHD_boundary_data.sav")
 
-data_bz: np.ndarray[np.float64, np.dtype[np.float64]] = data.data_z
+data_bz = data.data_z
 # data_by: np.ndarray[np.float64, np.dtype[np.float64]] = data.data_y
 # data_bx: np.ndarray[np.float64, np.dtype[np.float64]] = data.data_x
-nresol_x: int = data.nresol_x
-nresol_y: int = data.nresol_y
-nresol_z: int = data.nresol_z
-pixelsize_x: np.float64 = data.pixelsize_x
-pixelsize_y: np.float64 = data.pixelsize_y
-pixelsize_z: np.float64 = data.pixelsize_z
-nf_max: int = data.nf_max
-xmin: np.float64 = data.xmin
-xmax: np.float64 = data.xmax
-ymin: np.float64 = data.ymin
-ymax: np.float64 = data.ymax
-zmin: np.float64 = data.zmin
-zmax: np.float64 = data.zmax
-z0: np.float64 = data.z0
+nresol_x = data.nresol_x
+nresol_y = data.nresol_y
+nresol_z = data.nresol_z
+pixelsize_x = data.pixelsize_x
+pixelsize_y = data.pixelsize_y
+pixelsize_z = data.pixelsize_z
+nf_max = data.nf_max
+xmin = data.xmin
+xmax = data.xmax
+ymin = data.ymin
+ymax = data.ymax
+zmin = data.zmin
+zmax = data.zmax
+z0 = data.z0
 
-a: float = 0.149
-alpha: float = 1.0
-b: float = 1.0
+a = 0.149
+alpha = 1.0
+b = 1.0
 
-deltaz: np.float64 = np.float64(z0 / 10.0)
+deltaz = np.float64(z0 / 10.0)
 # Background atmosphere
 
-g: float = 272.2  # solar gravitational acceleration m/s^-2 gravitational acceleration
+g = 272.2  # solar gravitational acceleration m/s^-2 gravitational acceleration
 
-h1: float = 0.0001  # Initial step length for fieldline3D
-eps: float = 1.0e-8
+h1 = 0.0001  # Initial step length for fieldline3D
+eps = 1.0e-8
 # Tolerance to which we require point on field line known for fieldline3D
-hmin: float = 0.0  # Minimum step length for fieldline3D
-hmax: float = 1.0  # Maximum step length for fieldline3D
+hmin = 0.0  # Minimum step length for fieldline3D
+hmax = 1.0  # Maximum step length for fieldline3D
 
 bfield: np.ndarray[np.float64, np.dtype[np.float64]] = magnetic_field(
     data_bz,
@@ -176,8 +176,8 @@ backtemp = 0.0 * z_arr
 backden = 0.0 * z_arr
 
 maxcoord = np.unravel_index(np.argmax(b_back, axis=None), b_back.shape)
-iy: int = int(maxcoord[0])
-ix: int = int(maxcoord[1])
+iy = int(maxcoord[0])
+ix = int(maxcoord[1])
 print(ix, iy)
 print(x_arr[ix], y_arr[iy])
 dpres = 0.0 * z_arr

@@ -121,3 +121,7 @@ data/
 *.txt
 *.pdf
 nw19/
+3d/
+*.gif
+nw2019_paper/
+p_d_tests_VonMises/

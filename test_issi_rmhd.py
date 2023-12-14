@@ -57,38 +57,36 @@ data = read_issi_rmhd("data/RMHD_boundary_data.sav")
 
 # BFieldvec_Seehafer = np.load('field_data_potential.npy')
 
-data_bx: np.ndarray[np.float64, np.dtype[np.float64]] = data.data_x
-data_by: np.ndarray[np.float64, np.dtype[np.float64]] = data.data_y
-data_bz: np.ndarray[np.float64, np.dtype[np.float64]] = data.data_z
-nresol_x: int = data.nresol_x
-nresol_y: int = data.nresol_y
-nresol_z: int = data.nresol_z
-pixelsize_x: np.float64 = data.pixelsize_x
-pixelsize_y: np.float64 = data.pixelsize_y
-pixelsize_z: np.float64 = data.pixelsize_z
-nf_max: int = data.nf_max
-xmin: np.float64 = data.xmin
-xmax: np.float64 = data.xmax
-ymin: np.float64 = data.ymin
-ymax: np.float64 = data.ymax
-zmin: np.float64 = data.zmin
-zmax: np.float64 = data.zmax
-z0: np.float64 = data.z0
+data_bx = data.data_x
+data_by = data.data_y
+data_bz = data.data_z
+nresol_x = data.nresol_x
+nresol_y = data.nresol_y
+nresol_z = data.nresol_z
+pixelsize_x = data.pixelsize_x
+pixelsize_y = data.pixelsize_y
+pixelsize_z = data.pixelsize_z
+nf_max = data.nf_max
+xmin = data.xmin
+xmax = data.xmax
+ymin = data.ymin
+ymax = data.ymax
+zmin = data.zmin
+zmax = data.zmax
+z0 = data.z0
 
-a: float = 0.149
-alpha: float = 1.0
-b: float = 1.0
+a = 0.149
+alpha = 1.0
+b = 1.0
 
-h1: float = 0.0001  # Initial step length for fieldline3D
-eps: float = 1.0e-8
+h1 = 0.0001  # Initial step length for fieldline3D
+eps = 1.0e-8
 # Tolerance to which we require point on field line known for fieldline3D
-hmin: float = 0.0  # Minimum step length for fieldline3D
-hmax: float = 1.0  # Maximum step length for fieldline3D
-g: float = 272.2  # solar gravitational acceleration m/s^-2 gravitational acceleration
+hmin = 0.0  # Minimum step length for fieldline3D
+hmax = 1.0  # Maximum step length for fieldline3D
+g = 272.2  # solar gravitational acceleration m/s^-2 gravitational acceleration
 
-deltaz: np.float64 = np.float64(
-    z0 / 10.0
-)  # z0 at 2Mm so widht of transition region = 200km
+deltaz = np.float64(z0 / 10.0)  # z0 at 2Mm so widht of transition region = 200km
 
 # plot_magnetogram_boundary(data_bz, nresol_x, nresol_y)
 
@@ -202,15 +200,9 @@ pB0 = 3.9789 * 10**-3 * b0**2  # Magnetic pressure on photosphere
 beta0 = p0 / pB0
 b = 1.0
 
-x_arr: np.ndarray[np.float64, np.dtype[np.float64]] = (
-    np.arange(nresol_x) * (xmax - xmin) / (nresol_x - 1) + xmin
-)
-y_arr: np.ndarray[np.float64, np.dtype[np.float64]] = (
-    np.arange(nresol_y) * (ymax - ymin) / (nresol_y - 1) + ymin
-)
-z_arr: np.ndarray[np.float64, np.dtype[np.float64]] = (
-    np.arange(nresol_z) * (zmax - zmin) / (nresol_z - 1) + zmin
-)
+x_arr = np.arange(nresol_x) * (xmax - xmin) / (nresol_x - 1) + xmin
+y_arr = np.arange(nresol_y) * (ymax - ymin) / (nresol_y - 1) + ymin
+z_arr = np.arange(nresol_z) * (zmax - zmin) / (nresol_z - 1) + zmin
 
 backpres = 0.0 * z_arr
 backtemp = 0.0 * z_arr
@@ -221,8 +213,8 @@ maxcoord = np.unravel_index(
     np.argmax(b_back_small, axis=None),
     b_back_small.shape,
 )
-iy: int = int(maxcoord[0])
-ix: int = int(maxcoord[1])
+iy = int(maxcoord[0])
+ix = int(maxcoord[1])
 print(ix, iy)
 print(x_arr[ix], y_arr[iy])
 dpres = 0.0 * z_arr

@@ -22,33 +22,28 @@ from mflex.model.plasma_parameters import (
 )
 from datetime import datetime
 from mflex.model.field.utility.height_profile import f
+from mflex.model.field.utility.fft import fft_coeff_seehafer
 
 
-nresol_x: int = 120
-nresol_y: int = 120
-nresol_z: int = 200
-xmin: np.float64 = 0.0
-xmax: np.float64 = 2.0
-ymin: np.float64 = 0.0
-ymax: np.float64 = 2.0
-zmin: np.float64 = 0.0
-zmax: np.float64 = 2.0
-z0: np.float64 = 0.2
-pixelsize_x: np.float64 = (xmax - xmin) / nresol_x
-pixelsize_y: np.float64 = (ymax - ymin) / nresol_y
-pixelsize_z: np.float64 = (zmax - zmin) / nresol_z
+nresol_x = 120
+nresol_y = 120
+nresol_z = 200
+xmin = 0.0
+xmax = 2.0
+ymin = 0.0
+ymax = 2.0
+zmin = 0.0
+zmax = 2.0
+z0 = 0.2
+pixelsize_x = (xmax - xmin) / nresol_x
+pixelsize_y = (ymax - ymin) / nresol_y
+pixelsize_z = (zmax - zmin) / nresol_z
 nf_max = 80
 
-data_bz: np.ndarray[np.float64, np.dtype[np.float64]] = np.zeros((nresol_y, nresol_x))
-x_arr: np.ndarray[np.float64, np.dtype[np.float64]] = (
-    np.arange(nresol_x) * (xmax - xmin) / (nresol_x - 1) + xmin
-)
-y_arr: np.ndarray[np.float64, np.dtype[np.float64]] = (
-    np.arange(nresol_y) * (ymax - ymin) / (nresol_y - 1) + ymin
-)
-z_arr: np.ndarray[np.float64, np.dtype[np.float64]] = (
-    np.arange(nresol_z) * (zmax - zmin) / (nresol_z - 1) + zmin
-)
+data_bz = np.zeros((nresol_y, nresol_x))
+x_arr = np.arange(nresol_x) * (xmax - xmin) / (nresol_x - 1) + xmin
+y_arr = np.arange(nresol_y) * (ymax - ymin) / (nresol_y - 1) + ymin
+z_arr = np.arange(nresol_z) * (zmax - zmin) / (nresol_z - 1) + zmin
 
 for ix in range(0, nresol_x):
     for iy in range(0, nresol_y):
@@ -56,19 +51,19 @@ for ix in range(0, nresol_x):
         y = y_arr[iy]
         data_bz[iy, ix] = dipole(x, y)
 
-# plot_magnetogram_boundary(data_bz, nresol_y, nresol_x)
+plot_magnetogram_boundary(data_bz, nresol_y, nresol_x)
+exit()
+a = 0.149
+alpha = 1.0
+b = 1.0
 
-a: float = 0.149
-alpha: float = 1.0
-b: float = 1.0
-
-h1: float = 0.0001  # Initial step length for fieldline3D
-eps: float = 1.0e-8
+h1 = 0.0001  # Initial step length for fieldline3D
+eps = 1.0e-8
 # Tolerance to which we require point on field line known for fieldline3D
-hmin: float = 0.0  # Minimum step length for fieldline3D
-hmax: float = 1.0  # Maximum step length for fieldline3D
+hmin = 0.0  # Minimum step length for fieldline3D
+hmax = 1.0  # Maximum step length for fieldline3D
 
-deltaz: np.float64 = np.float64(z0 / 10.0)
+deltaz = np.float64(z0 / 10.0)
 
 bfield: np.ndarray[np.float64, np.dtype[np.float64]] = magnetic_field(
     data_bz,
@@ -93,9 +88,9 @@ bfield: np.ndarray[np.float64, np.dtype[np.float64]] = magnetic_field(
 
 b_back = np.zeros((2 * nresol_y, 2 * nresol_x))
 b_back = bfield[:, :, 0, 2]
-"""plot_magnetogram_boundary(b_back, 2 * nresol_x, 2 * nresol_y)"""
+# plot_magnetogram_boundary(b_back, 2 * nresol_x, 2 * nresol_y)
 
-"""plot_fieldlines_polar(
+plot_fieldlines_polar(
     bfield,
     h1,
     hmin,
@@ -114,7 +109,8 @@ b_back = bfield[:, :, 0, 2]
     b,
     alpha,
     nf_max,
-)"""
+)
+exit()
 
 dpartial_bfield: np.ndarray[np.float64, np.dtype[np.float64]] = bz_partial_derivatives(
     data_bz,
@@ -166,8 +162,8 @@ maxcoord = np.unravel_index(
 )
 
 
-iy: int = int(maxcoord[0])
-ix: int = int(maxcoord[1])
+iy = int(maxcoord[0])
+ix = int(maxcoord[1])
 print(ix, iy)
 print(x_arr[ix], y_arr[iy])
 

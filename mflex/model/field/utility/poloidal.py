@@ -12,11 +12,11 @@ def phi(
     to asymptotic approximatio of Neukirch and Wiegelmann (2019).
     """
 
-    rplus: np.float64 = p / deltaz
-    rminus: np.float64 = q / deltaz
+    rplus = p / deltaz
+    rminus = q / deltaz
 
-    r: np.float64 = rminus / rplus
-    d: np.float64 = np.cosh(2.0 * rplus * z0) + r * np.sinh(2.0 * rplus * z0)
+    r = rminus / rplus
+    d = np.cosh(2.0 * rplus * z0) + r * np.sinh(2.0 * rplus * z0)
 
     if z - z0 < 0.0:
         return (
@@ -58,11 +58,11 @@ def dphidz(
     to asymptotic approximation of Neukirch and Wiegelmann (2019).
     """
 
-    rplus: np.float64 = p / deltaz
-    rminus: np.float64 = q / deltaz
+    rplus = p / deltaz
+    rminus = q / deltaz
 
-    r: np.float64 = rminus / rplus
-    d: np.float64 = np.cosh(2.0 * rplus * z0) + r * np.sinh(2.0 * rplus * z0)
+    r = rminus / rplus
+    d = np.cosh(2.0 * rplus * z0) + r * np.sinh(2.0 * rplus * z0)
 
     if z - z0 < 0.0:
         return (
