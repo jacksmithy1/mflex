@@ -31,7 +31,7 @@ from mflex.model.field.utility.poloidal import phi, dphidz
 
 nresol_x = 200
 nresol_y = 200
-nresol_z = 300
+nresol_z = 400
 xmin = 0.0
 xmax = 2.0  # in units of 10^4 km, therefore corresponds to 20Mm
 ymin = 0.0
@@ -41,7 +41,7 @@ zmax = 2.0
 pixelsize_x = (xmax - xmin) / nresol_x
 pixelsize_y = (ymax - ymin) / nresol_y
 pixelsize_z = (zmax - zmin) / nresol_z
-nf_max = 200
+nf_max = 100
 L = 1.0
 
 # Background atmosphere parameters
@@ -206,7 +206,7 @@ plt.show()
 a_fig2b = 0.22
 alpha_fig2b = 0.5
 z0_b_fig2b = 0.05
-deltaz_b_fig2b = 0.02
+deltaz_b_fig2b = 0.025
 
 bfield = magnetic_field(
     data_bz,
@@ -250,23 +250,23 @@ exit()
 
 a_p = 0.0
 alpha_p = 0.0
-z0_b_p = 0.2
-deltaz_b_p = 0.02
+z0_b_p = 0.05
+deltaz_b_p = 0.025
 
 a_lff = 0.0
 alpha_lff = 0.5
-z0_b_lff = 0.2
-deltaz_b_lff = 0.02
+z0_b_lff = 0.05
+deltaz_b_lff = 0.025
 
 a_mhs1 = 0.22
 alpha_mhs1 = 0.5
 z0_b_mhs1 = 0.05
-deltaz_b_mhs1 = 0.02
+deltaz_b_mhs1 = 0.025
 
 a_mhs2 = 0.44
 alpha_mhs2 = 0.5
-z0_b_mhs2 = 0.04
-deltaz_b_mhs2 = 0.03
+z0_b_mhs2 = 0.05
+deltaz_b_mhs2 = 0.025
 
 bfield_p = magnetic_field(
     data_bz,
@@ -436,7 +436,6 @@ dbfield_mhs2 = bz_partial_derivatives(
     nf_max,
 )
 
-"""
 # Figures 3 and 4
 
 plot_fieldlines_polar(
@@ -458,7 +457,7 @@ plot_fieldlines_polar(
     b,
     alpha_p,
     nf_max,
-    name="potential",
+    name="potential_zoom",
 )
 
 plot_fieldlines_polar(
@@ -480,7 +479,7 @@ plot_fieldlines_polar(
     b,
     alpha_lff,
     nf_max,
-    name="lff",
+    name="lff_zoom",
 )
 
 plot_fieldlines_polar(
@@ -502,7 +501,7 @@ plot_fieldlines_polar(
     b,
     alpha_mhs1,
     nf_max,
-    name="MHS1",
+    name="MHS1_zoom",
 )
 
 plot_fieldlines_polar(
@@ -524,9 +523,9 @@ plot_fieldlines_polar(
     b,
     alpha_mhs2,
     nf_max,
-    name="MHS2",
+    name="MHS2_zoom",
 )
-"""
+exit()
 
 # Figure 7
 
@@ -875,14 +874,14 @@ plt.show()
 """
 
 # Figure 9
-# a_mhs2 = 0.44
-# alpha_mhs2 = 0.5
-# z0_b_mhs2 = 0.04
-# deltaz_b_mhs2 = 0.03
+"""a_mhs2 = 0.44
+alpha_mhs2 = 0.5
+z0_b_mhs2 = 0.04
+deltaz_b_mhs2 = 0.03"""
 a_low = a_mhs2 * (1 - np.tanh(-z0_b_mhs2 / deltaz_b_mhs2))
-a_low = 2.0 * a_mhs2
+# a_low = 2.0 * a_mhs2
 kappa = 1 / z0_b_mhs2
-
+# kappa = 1 / deltaz_b_mhs2
 
 bfield_low = magnetic_field_low(
     data_bz,
@@ -961,8 +960,8 @@ plt.plot(z_arr, dpres_low, linewidth=0.5, color="black", linestyle="dashed")
 plt.xlabel("z")
 plt.ylabel("Delta p")
 plt.yscale("log")
-plt.ylim([10**-18, 0.0])
-plt.xlim([0.0, 2.0])
+plt.ylim([10**-17, 0.0])
+plt.xlim([0.0, 0.5])
 plotname = "/Users/lilli/Desktop/mflex/nw2019_paper/figure9a.png"
 plt.savefig(plotname, dpi=300)
 plt.show()
@@ -974,8 +973,8 @@ plt.plot(z_arr, dden_low, linewidth=0.5, color="black", linestyle="dashed")
 plt.xlabel("z")
 plt.ylabel("Delta d")
 plt.yscale("log")
-# plt.ylim([10**-50, 0.0])
-plt.xlim([0.0, 2.0])
+plt.ylim([10**-50, 0.0])
+plt.xlim([0.0, 0.5])
 plotname = "/Users/lilli/Desktop/mflex/nw2019_paper/figure9b.png"
 plt.savefig(plotname, dpi=300)
 plt.show()

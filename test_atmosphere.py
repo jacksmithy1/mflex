@@ -30,9 +30,9 @@ from mflex.model.field.utility.height_profile import f_low, f, dfdz
 from mflex.model.field.utility.poloidal import phi, dphidz
 from PIL import Image
 
-nresol_x = 200
-nresol_y = 200
-nresol_z = 300
+nresol_x = 100
+nresol_y = 100
+nresol_z = 400
 xmin = 0.0
 xmax = 2.0  # in units of 10^4 km, therefore corresponds to 20Mm
 ymin = 0.0
@@ -43,7 +43,7 @@ z0 = 0.2
 pixelsize_x = (xmax - xmin) / nresol_x
 pixelsize_y = (ymax - ymin) / nresol_y
 pixelsize_z = (zmax - zmin) / nresol_z
-nf_max = 200
+nf_max = 100
 deltaz = z0 / 10.0
 
 t_photosphere = 5600.0  # Temperature at z = 0 (on photosphere) in Kelvin
@@ -68,12 +68,12 @@ pB0 = (b0 * 10**-4) ** 2 / (2 * mu0)  # magnetic pressure b0**2 / 2mu0 in kg/(s^
 beta0 = p0 / pB0  # Plasma Beta, ration plasma to magnetic pressure
 h_photo = h / t0 * t_photosphere
 
-a = 0.44
+a = 0.22
 alpha = 0.5
 b = 1.0
 
 z0_b = 0.05
-deltaz_b = 0.02
+deltaz_b = 0.025
 
 print("Atmospheric z0", z0)
 print("Atmospheric Delta z", deltaz)
@@ -524,7 +524,7 @@ plt.plot(
     linestyle="solid",
     label="Background pressure",
 )
-# plt.xlim([0, 2 * z0])
+plt.xlim([0, 1.0])
 # plt.yscale("log")
 plt.legend()
 plotname = (
@@ -577,7 +577,7 @@ plt.plot(
     linestyle="solid",
     label="Background density",
 )
-plt.xlim([0, 2 * z0])
+plt.xlim([0, 1.0])
 # plt.yscale("log")
 plt.legend()
 plotname = (

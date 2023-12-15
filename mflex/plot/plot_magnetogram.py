@@ -250,7 +250,7 @@ def plot_fieldlines_polar(
     ax.set_xlabel("x")
     ax.set_ylabel("y")
     ax.set_zlabel("z")
-    ax.set_zlim([zmin, zmax])
+    ax.set_zlim([zmin, 1.0])
     # ax.view_init(90, -90)
     ax.view_init(30, -115, 0)
 

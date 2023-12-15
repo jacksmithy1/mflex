@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 import numpy as np
 from scipy.special import jv
+from scipy.special import gamma, hyp2f1
 
 
 def phi(
@@ -133,3 +134,144 @@ def dphidz_low(
         / 2.0
         / jv(p, q)
     )
+
+
+def phi_hypgeo(z, p, q, z0, deltaz):
+    w = (z - z0) / deltaz
+    eta_d = 1.0 / (1.0 + np.exp(2.0 * w))
+
+    if z - z0 < 0.0:
+        phi = (1.0 / (1.0 + np.exp(2.0 * w))) ** (q + p) * np.exp(2.0 * p * w) * gamma(
+            2 * q + 1
+        ) * gamma(-2 * p) / (gamma(q - p) * gamma(q - p + 1)) * hyp2f1(
+            p + q + 1, p + q, 2 * p + 1, 1 - eta_d
+        ) + (
+            1.0 / (1.0 + np.exp(2.0 * w))
+        ) ** (
+            q - p
+        ) * np.exp(
+            -2.0 * p * w
+        ) * gamma(
+            2 * q + 1
+        ) * gamma(
+            2 * p
+        ) / (
+            gamma(p + q + 1) * gamma(p + q)
+        ) * hyp2f1(
+            q - p, q - p + 1, -2 * p + 1, 1 - eta_d
+        )
+    else:
+        phi = eta_d**q * (1 - eta_d) ** p * hyp2f1(p + q + 1, p + q, 2 * q + 1, eta_d)
+
+    w0 = -z0 / deltaz
+    eta0 = 1.0 / (1.0 + np.exp(2.0 * w0))
+
+    phi0 = (1.0 / (1.0 + np.exp(2.0 * w0))) ** (q + p) * np.exp(2.0 * p * w0) * gamma(
+        2 * q + 1
+    ) * gamma(-2 * p) / (gamma(q - p + 1) * gamma(q - p)) * hyp2f1(
+        p + q + 1, p + q, 2 * p + 1, 1 - eta0
+    ) + (
+        1.0 / (1.0 + np.exp(2.0 * w0))
+    ) ** (
+        q - p
+    ) * np.exp(
+        -2.0 * p * w0
+    ) * gamma(
+        2 * q + 1
+    ) * gamma(
+        2 * p
+    ) / (
+        gamma(p + q + 1) * gamma(p + q)
+    ) * hyp2f1(
+        q - p, q - p + 1, -2 * p + 1, 1 - eta0
+    )
+
+    res = phi / phi0
+    return res
+
+
+def dphidz_hypgeo(z, p, q, z0, deltaz):
+    w = (z - z0) / deltaz
+    eta_d = 1.0 / (1.0 + np.exp(2.0 * w))
+
+    if z - z0 < 0.0:
+        term1 = (
+            gamma(2 * q + 1)
+            * gamma(-2 * p)
+            / (gamma(q - p) * gamma(q - p + 1))
+            * (1.0 / (1.0 + np.exp(2.0 * w))) ** (q + p + 1)
+            * (q * np.exp(2.0 * (p + 1) * w) - p * np.exp(2 * p * w))
+            * hyp2f1(p + q + 1, p + q, 2 * p + 1, 1 - eta_d)
+        )
+        term2 = (
+            gamma(2 * q + 1)
+            * gamma(2 * p)
+            / (gamma(q + p) * gamma(q + p + 1))
+            * (1.0 / (1.0 + np.exp(2.0 * w))) ** (q - p + 1)
+            * (q * np.exp(-2.0 * (p - 1) * w) - p * np.exp(-2 * p * w))
+            * hyp2f1(q - p, q - p + 1, -2 * p + 1, 1 - eta_d)
+        )
+        term3 = (
+            gamma(2 * q + 2)
+            * gamma(-2 * p - 1)
+            / (gamma(q - p) * gamma(q - p + 1))
+            * (p + q + 1)
+            * (p + q)
+            / (2 * q + 1)
+            * (1.0 / (1.0 + np.exp(2.0 * w))) ** (q + p + 2)
+            * np.exp(2.0 * (p + 1) * w)
+            * hyp2f1(q + p + 2, q + p + 1, 2 * p + 2, 1 - eta_d)
+        )
+        term4 = (
+            gamma(2 * q + 2)
+            * gamma(2 * p + 1)
+            / (gamma(q + p + 1) * gamma(q + p + 2))
+            * (p + q + 1)
+            * (p + q)
+            / (2 * q + 1)
+            * (1.0 / (1.0 + np.exp(2.0 * w))) ** (q - p + 1)
+            * np.exp(-2.0 * p * w)
+            * hyp2f1(q - p, q - p + 1, -2 * p + 1, 1 - eta_d)
+        )
+        dphi = term1 + term2 + term3 + term4
+    else:
+        dphi = (
+            q * eta_d**q * (1 - eta_d) ** (p + 1)
+            - p * eta_d ** (q + 1) * (1 - eta_d) ** p
+        ) * hyp2f1(p + q + 1, p + q, 2 * q + 1, eta_d) + (p + q + 1) * (p + q) / (
+            2 * q + 1
+        ) * eta_d ** (
+            q + 1
+        ) * (
+            1 - eta_d
+        ) ** (
+            p + 1
+        ) * hyp2f1(
+            p + q + 2, p + q + 1, 2 * q + 2, eta_d
+        )
+
+    w0 = -z0 / deltaz
+    eta0 = 1.0 / (1.0 + np.exp(2.0 * w0))
+
+    phi0 = (1.0 / (1.0 + np.exp(2.0 * w0))) ** (q + p) * np.exp(2.0 * p * w0) * gamma(
+        2 * q + 1
+    ) * gamma(-2 * p) / (gamma(q - p + 1) * gamma(q - p)) * hyp2f1(
+        p + q + 1, p + q, 2 * p + 1, 1 - eta0
+    ) + (
+        1.0 / (1.0 + np.exp(2.0 * w0))
+    ) ** (
+        q - p
+    ) * np.exp(
+        -2.0 * p * w0
+    ) * gamma(
+        2 * q + 1
+    ) * gamma(
+        2 * p
+    ) / (
+        gamma(p + q + 1) * gamma(p + q)
+    ) * hyp2f1(
+        q - p, q - p + 1, -2 * p + 1, 1 - eta0
+    )
+
+    res = -2.0 / deltaz * dphi / phi0
+    return res
