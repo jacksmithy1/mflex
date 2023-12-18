@@ -254,17 +254,17 @@ z0_b_p = 0.05
 deltaz_b_p = 0.025
 
 a_lff = 0.0
-alpha_lff = 0.5
+alpha_lff = 0.25
 z0_b_lff = 0.05
 deltaz_b_lff = 0.025
 
-a_mhs1 = 0.22
-alpha_mhs1 = 0.5
+a_mhs1 = 0.24
+alpha_mhs1 = 0.25
 z0_b_mhs1 = 0.05
 deltaz_b_mhs1 = 0.025
 
-a_mhs2 = 0.44
-alpha_mhs2 = 0.5
+a_mhs2 = 0.48
+alpha_mhs2 = 0.25
 z0_b_mhs2 = 0.05
 deltaz_b_mhs2 = 0.025
 

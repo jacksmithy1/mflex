@@ -68,12 +68,12 @@ pB0 = (b0 * 10**-4) ** 2 / (2 * mu0)  # magnetic pressure b0**2 / 2mu0 in kg/(s^
 beta0 = p0 / pB0  # Plasma Beta, ration plasma to magnetic pressure
 h_photo = h / t0 * t_photosphere
 
-a = 0.22
-alpha = 0.5
+a = 0.12
+alpha = 0.25
 b = 1.0
 
-z0_b = 0.05
-deltaz_b = 0.025
+z0_b = 0.1
+deltaz_b = 0.02
 
 print("Atmospheric z0", z0)
 print("Atmospheric Delta z", deltaz)
