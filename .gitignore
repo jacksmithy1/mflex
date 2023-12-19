@@ -108,8 +108,11 @@ data/
 deploy.sh
 x.py
 run.py
-recreate_nw19.py
 test_vectorised.py
+
+nw_2019.ipynb
+test_linecheck.ipynb
+test_poloidal.ipynb
 
 # data folders
 psa*

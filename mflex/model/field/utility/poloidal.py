@@ -178,7 +178,7 @@ def dphidz_hypgeo(z, p, q, z0, deltaz):
             / (2 * q + 1)
             * (1.0 / (1.0 + np.exp(2.0 * w))) ** (q - p + 1)
             * np.exp(-2.0 * p * w)
-            * hyp2f1(q - p, q - p + 1, -2 * p + 1, 1 - eta_d)
+            * hyp2f1(q - p, q - p + 1, -2 * p, 1 - eta_d)
         )
         dphi = term1 + term2 + term3 + term4
     else:

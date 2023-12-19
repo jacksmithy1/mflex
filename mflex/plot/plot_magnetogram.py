@@ -6,6 +6,7 @@ from mflex.plot.linetracer.fieldline3D import fieldline3d
 from datetime import datetime
 import math
 from typing import List
+from mflex.plot.linetracer.linecheck import fieldlinecheck
 
 
 def plot_magnetogram_boundary(
@@ -301,29 +302,32 @@ def plot_fieldlines_polar(
             )  # , periodicity='xy')
 
             # Plot fieldlines
-            fieldline_x = np.zeros(len(fieldline))
-            fieldline_y = np.zeros(len(fieldline))
-            fieldline_z = np.zeros(len(fieldline))
-            fieldline_x[:] = fieldline[:, 0]
-            fieldline_y[:] = fieldline[:, 1]
-            fieldline_z[:] = fieldline[:, 2]
+            fieldlines = fieldlinecheck(fieldline, 0.0, xmax, 0.0, ymax)
 
-            # Need to give row direction first/ Y, then column direction/ X
-            ax.plot(
-                fieldline_y,
-                fieldline_x,
-                fieldline_z,
-                color="blue",
-                linewidth=0.5,
-                zorder=4000,
-            )
+            for line in fieldlines:
+                fieldline_x = np.zeros(len(line))
+                fieldline_y = np.zeros(len(line))
+                fieldline_z = np.zeros(len(line))
+                fieldline_x[:] = line[:, 1]
+                fieldline_y[:] = line[:, 0]
+                fieldline_z[:] = line[:, 2]
 
-    plotname = "/Users/lilli/Desktop/mflex/nw2019_paper/figure3" + name + ".png"
+                # Need to give row direction first/ Y, then column direction/ X
+                ax.plot(
+                    fieldline_y,
+                    fieldline_x,
+                    fieldline_z,
+                    color="blue",
+                    linewidth=0.5,
+                    zorder=4000,
+                )
+
+    """plotname = "/Users/lilli/Desktop/mflex/nw2019_paper/figure3" + name + ".png"
     plt.savefig(plotname, dpi=300)
 
     ax.view_init(0, -90)
     plotname = "/Users/lilli/Desktop/mflex/nw2019_paper/figure4" + name + ".png"
-    plt.savefig(plotname, dpi=300)
+    plt.savefig(plotname, dpi=300)"""
 
     """current_time = datetime.now()
     dt_string = current_time.strftime("%d-%m-%Y_%H-%M-%S")
