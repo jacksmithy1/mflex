@@ -110,9 +110,8 @@ x.py
 run.py
 test_vectorised.py
 
-nw_2019.ipynb
-test_linecheck.ipynb
-test_poloidal.ipynb
+*.ipynb
+
 
 # data folders
 psa*

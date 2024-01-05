@@ -6,7 +6,7 @@ import numpy as np
 def Vec_corr_metric(
     B: np.ndarray[np.float64, np.dtype[np.float64]],
     b: np.ndarray[np.float64, np.dtype[np.float64]],
-):
+) -> np.float64:
     """
     Returns Vector Correlation metric of B : B_ref and b : B_rec.
     """
@@ -19,7 +19,7 @@ def Vec_corr_metric(
 def Cau_Schw_metric(
     B: np.ndarray[np.float64, np.dtype[np.float64]],
     b: np.ndarray[np.float64, np.dtype[np.float64]],
-):
+) -> np.float64:
     """
     Returns Cauchy Schwarz metric of B : B_ref and b : B_rec.
     """
@@ -33,7 +33,7 @@ def Cau_Schw_metric(
 def Norm_vec_err_metric(
     B: np.ndarray[np.float64, np.dtype[np.float64]],
     b: np.ndarray[np.float64, np.dtype[np.float64]],
-):
+) -> np.float64:
     """
     Returns Normalised Vector Error metric of B : B_ref and b : B_rec.
     """
@@ -44,7 +44,7 @@ def Norm_vec_err_metric(
 def Mean_vec_err_metric(
     B: np.ndarray[np.float64, np.dtype[np.float64]],
     b: np.ndarray[np.float64, np.dtype[np.float64]],
-):
+) -> np.float64:
     """
     Returns Mean Vector Error metric of B : B_ref and b : B_rec.
     """
@@ -59,7 +59,7 @@ def Mean_vec_err_metric(
 def Mag_ener_metric(
     B: np.ndarray[np.float64, np.dtype[np.float64]],
     b: np.ndarray[np.float64, np.dtype[np.float64]],
-):
+) -> np.float64:
     """
     Returns Magnetic Energy metric of B : B_ref and b : B_rec.
     """

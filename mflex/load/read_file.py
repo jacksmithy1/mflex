@@ -33,12 +33,12 @@ def read_issi_rmhd(path: str) -> Data3D:
     # [0:nresol_y,0:nresol_x]
     # Y-axis size first as this corresponds to number of rows, then X-Axis size corresponding t number of columns
 
-    # print(data["info_unit"])
-    # print(data["info_pixel"])
+    print(data["info_unit"])
+    print(data["info_pixel"])
     # print(data['info_boundary'])
     # print(data["info_array"])
 
-    pixelsize = np.float64(input("Pixelsize in km?"))
+    pixelsize = 64.0
 
     # bx_xlen: np.int16 = data_bx.shape[1]
     # bx_ylen: np.int16 = data_bx.shape[0]
@@ -58,22 +58,22 @@ def read_issi_rmhd(path: str) -> Data3D:
     #    nresol_y = bx_ylen  # Data resolution in y direction
     nresol_x = bz_xlen
     nresol_y = bz_ylen
-    L = np.float64(1.0)
+    L = 1.0
 
-    xmin = np.float64(0.0)  # Minimum value of x in data length scale, not in Mm
-    ymin = np.float64(0.0)  # Minimum value of y in data length scale, not in Mm
-    zmin = np.float64(0.0)  # Minimum value of z in data length scale, not in Mm
-    xmax = np.float64(0.0)  # Minimum value of x in data length scale, not in Mm
-    ymax = np.float64(0.0)  # Minimum value of y in data length scale, not in Mm
-    zmax = np.float64(0.0)
+    xmin = 0.0  # Minimum value of x in data length scale, not in Mm
+    ymin = 0.0  # Minimum value of y in data length scale, not in Mm
+    zmin = 0.0  # Minimum value of z in data length scale, not in Mm
+    xmax = None  # Minimum value of x in data length scale, not in Mm
+    ymax = None  # Minimum value of y in data length scale, not in Mm
+    zmax = None
 
     if nresol_x < nresol_y:
         xmax = L  # Maximum value of x in data length scale, not in Mm
-        ymax = np.float64(nresol_y / nresol_x)
+        ymax = nresol_y / nresol_x
         # Maximum value of y in data length scale, not in Mm
     if nresol_y < nresol_x:
         ymax = L
-        xmax = np.float64(nresol_x / nresol_y)
+        xmax = nresol_x / nresol_y
     if nresol_y == nresol_x:
         xmax = L
         ymax = L
@@ -84,18 +84,18 @@ def read_issi_rmhd(path: str) -> Data3D:
     if pixelsize_x != pixelsize_y:
         raise ValueError(("directional pixel sizes of data do not match"))
 
-    nresol_z = np.floor(10000.0 / pixelsize)
+    nresol_z = int(np.floor(10000.0 / pixelsize))
     # Artifical upper boundary at 10Mm outside of corona
     z0_index = np.floor(2000.0 / pixelsize)  # Height of Transition Region at 2Mm
 
     if xmax == L:
-        zmax = np.float64(nresol_z / nresol_x)
-        z0 = np.float64(z0_index / nresol_x)
+        zmax = nresol_z / nresol_x
+        z0 = z0_index / nresol_x
     if ymax == L:
-        zmax = np.float64(nresol_z / nresol_y)
-        z0 = np.float64(z0_index / nresol_y)
+        zmax = nresol_z / nresol_y
+        z0 = z0_index / nresol_y
     else:
-        z0 = np.float64(0.0)
+        z0 = 0.0
 
     pixelsize_z = abs(zmax - zmin) / nresol_z  # Data pixel size in z direction
 
@@ -143,11 +143,11 @@ def read_issi_analytical(path: str) -> Data3D:
     # Y-axis size first as this corresponds to number of rows, then X-Axis size corresponding t number of columns
 
     # print(data["info_unit"])
-    print(data["info_pixel"])
+    # print(data["info_pixel"])
     # print(data['info_boundary'])
     # print(data["info_array"])
 
-    pixelsize = np.float64(input("Pixelsize in km?"))
+    pixelsize = 40.0
 
     # bx_xlen: np.int16 = data_bx.shape[1]
     # bx_ylen: np.int16 = data_bx.shape[0]
@@ -167,23 +167,21 @@ def read_issi_analytical(path: str) -> Data3D:
     #    nresol_y = bx_ylen  # Data resolution in y direction
     nresol_x = bz_xlen
     nresol_y = bz_ylen
-    L = np.float64(1.0)
+    L = 1.0
 
-    xmin = np.float64(0.0)  # Minimum value of x in data length scale, not in Mm
-    ymin = np.float64(0.0)  # Minimum value of y in data length scale, not in Mm
-    zmin = np.float64(0.0)  # Minimum value of z in data length scale, not in Mm
-    xmax = np.float64(0.0)  # Minimum value of x in data length scale, not in Mm
-    ymax = np.float64(0.0)  # Minimum value of y in data length scale, not in Mm
-    zmax = np.float64(0.0)
+    xmin = 0.0  # Minimum value of x in data length scale, not in Mm
+    ymin = 0.0  # Minimum value of y in data length scale, not in Mm
+    zmin = 0.0  # Minimum value of z in data length scale, not in Mm
+    xmax = None
+    ymax = None
+    zmax = None
 
     if nresol_x < nresol_y:
         xmax = L  # Maximum value of x in data length scale, not in Mm
-        ymax = np.float64(
-            nresol_y / nresol_x
-        )  # Maximum value of y in data length scale, not in Mm
+        ymax = nresol_y / nresol_x  # Maximum value of y in data length scale, not in Mm
     if nresol_y < nresol_x:
         ymax = L
-        xmax = np.float64(nresol_x / nresol_y)
+        xmax = nresol_x / nresol_y
     if nresol_y == nresol_x:
         xmax = L
         ymax = L
@@ -194,18 +192,18 @@ def read_issi_analytical(path: str) -> Data3D:
     if pixelsize_x != pixelsize_y:
         raise ValueError("directional pixel sizes of data do not match")
 
-    nresol_z = np.floor(10000.0 / pixelsize)
+    nresol_z = int(np.floor(10000.0 / pixelsize))
     # Artifical upper boundary at 10Mm outside of corona
     z0_index = math.floor(2000.0 / pixelsize)  # Height of Transition Region at 2Mm
 
     if xmax == L:
-        zmax = np.float64(nresol_z / nresol_x)
-        z0 = np.float64(z0_index / nresol_x)
+        zmax = nresol_z / nresol_x
+        z0 = z0_index / nresol_x
     if ymax == L:
-        zmax = np.float64(nresol_z / nresol_y)
-        z0 = np.float64(z0_index / nresol_y)
+        zmax = nresol_z / nresol_y
+        z0 = z0_index / nresol_y
     else:
-        z0 = np.float64(0.0)
+        z0 = 0.0
 
     pixelsize_z = np.abs(zmax - zmin) / nresol_z  # Data pixel size in z direction
 
@@ -213,7 +211,7 @@ def read_issi_analytical(path: str) -> Data3D:
         print("nresol_z and zmax do not match")
         raise ValueError
 
-    nf_max = min(nresol_x, nresol_y)
+    nf_max = int(min(nresol_x, nresol_y))
 
     return Data3D(
         data_bx,
@@ -247,11 +245,11 @@ def read_fits_soar(path: str, header: bool = False) -> DataBz:
         image = getdata(path, ext=False)
         x_len = image.shape[0]
         y_len = image.shape[1]
-        plot_magnetogram_boundary(image, x_len, y_len)
+        """plot_magnetogram_boundary(image, x_len, y_len)
         x_start = int(input("First pixel x axis: "))
         x_last = int(input("Last pixel x axis: "))
         y_start = int(input("First pixel y axis: "))
-        y_last = int(input("Last pixel y axis: "))
+        y_last = int(input("Last pixel y axis: "))"""
         x_start = 400
         x_last = 1200
         y_start = 500
@@ -282,25 +280,23 @@ def read_fits_soar(path: str, header: bool = False) -> DataBz:
         else:
             pixelsize_radians = pixelsize_x_arcsec / 206265.0
 
-    dist_km = np.float64(dist / 1000.0)
+    dist_km = dist / 1000.0
     pixelsize_km = np.floor(pixelsize_radians * dist_km)
 
     nresol_x = cut_image.shape[1]
     nresol_y = cut_image.shape[0]
-    length_scale = np.float64(1.0)  # L
+    length_scale = 1.0  # L
 
-    xmin = np.float64(0.0)  # Minimum value of x in data length scale, not in Mm
-    ymin = np.float64(0.0)  # Minimum value of y in data length scale, not in Mm
-    zmin = np.float64(0.0)  # Minimum value of z in data length scale, not in Mm
+    xmin = 0.0  # Minimum value of x in data length scale, not in Mm
+    ymin = 0.0  # Minimum value of y in data length scale, not in Mm
+    zmin = 0.0  # Minimum value of z in data length scale, not in Mm
 
     if nresol_x < nresol_y:
         xmax = length_scale  # Maximum value of x in data length scale, not in Mm
-        ymax = np.float64(
-            nresol_y / nresol_x
-        )  # Maximum value of y in data length scale, not in Mm
+        ymax = nresol_y / nresol_x  # Maximum value of y in data length scale, not in Mm
     if nresol_y < nresol_x:
         ymax = length_scale
-        xmax = np.float64(nresol_x / nresol_y)
+        xmax = nresol_x / nresol_y
     if nresol_y == nresol_x:
         xmax = length_scale
         ymax = length_scale
@@ -324,11 +320,11 @@ def read_fits_soar(path: str, header: bool = False) -> DataBz:
     )  # Centre of region over which transition from NFF to FF takes place at 2Mm from photosphere
 
     if xmax == length_scale:
-        zmax = np.float64(nresol_z / nresol_x)
-        z0 = np.float64(z0_index / nresol_x)
+        zmax = nresol_z / nresol_x
+        z0 = z0_index / nresol_x
     if ymax == length_scale:
-        zmax = np.float64(nresol_z / nresol_y)
-        z0 = np.float64(z0_index / nresol_y)
+        zmax = nresol_z / nresol_y
+        z0 = z0_index / nresol_y
 
     pixelsize_z = (
         abs(zmax - zmin) / nresol_z
@@ -357,7 +353,7 @@ def read_fits_soar(path: str, header: bool = False) -> DataBz:
 
     nf_max: int = min(nresol_x, nresol_y)
 
-    databz: DataBz = DataBz(
+    databz = DataBz(
         cut_image,
         nresol_x,
         nresol_y,

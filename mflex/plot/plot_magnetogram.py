@@ -124,7 +124,7 @@ def plot_fieldlines_grid(
     nlinesmaxy = math.floor(ymax / dy)
 
     # Limit fieldline plot to original data size (rather than Seehafer size)
-    boxedges: np.ndarray[np.float64, np.dtype[np.float64]] = np.zeros((2, 3))
+    boxedges = np.zeros((2, 3))
 
     # Y boundaries must come first, X second due to switched order explained above
     boxedges[0, 0] = 0.0
@@ -144,7 +144,7 @@ def plot_fieldlines_grid(
 
             ystart = [y_start, x_start, 0.0]
             # Fieldline3D expects startpt, BField, Row values, Column values so we need to give Y first, then X
-            fieldline: np.ndarray[np.float64, np.dtype[np.float64]] = fieldline3d(
+            fieldline = fieldline3d(
                 ystart,
                 data_b,
                 y_arr,
@@ -161,15 +161,9 @@ def plot_fieldlines_grid(
             )  # , periodicity='xy')
 
             # Plot fieldlines
-            fieldline_x: np.ndarray[np.float64, np.dtype[np.float64]] = np.zeros(
-                len(fieldline)
-            )
-            fieldline_y: np.ndarray[np.float64, np.dtype[np.float64]] = np.zeros(
-                len(fieldline)
-            )
-            fieldline_z: np.ndarray[np.float64, np.dtype[np.float64]] = np.zeros(
-                len(fieldline)
-            )
+            fieldline_x = np.zeros(len(fieldline))
+            fieldline_y = np.zeros(len(fieldline))
+            fieldline_z = np.zeros(len(fieldline))
             fieldline_x[:] = fieldline[:, 0]
             fieldline_y[:] = fieldline[:, 1]
             fieldline_z[:] = fieldline[:, 2]
@@ -265,7 +259,7 @@ def plot_fieldlines_polar(
     dphi = 2.0 * np.pi / nlinesmaxphi
 
     # Limit fieldline plot to original data size (rather than Seehafer size)
-    boxedges: np.ndarray[np.float64, np.dtype[np.float64]] = np.zeros((2, 3))
+    boxedges = np.zeros((2, 3))
 
     # Y boundaries must come first, X second due to switched order explained above
     boxedges[0, 0] = 0.0
@@ -324,8 +318,10 @@ def plot_fieldlines_polar(
 
     """plotname = "/Users/lilli/Desktop/mflex/nw2019_paper/figure3" + name + ".png"
     plt.savefig(plotname, dpi=300)
-
+    """
+    ax.set_zlim([zmin, zmax])
     ax.view_init(0, -90)
+    """
     plotname = "/Users/lilli/Desktop/mflex/nw2019_paper/figure4" + name + ".png"
     plt.savefig(plotname, dpi=300)"""
 

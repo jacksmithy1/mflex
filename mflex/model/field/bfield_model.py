@@ -41,7 +41,7 @@ def magnetic_field(
     series expansion using anm, phi and dphidz.
     """
 
-    length_scale = np.float64(2.0)  # Normalising length scale for Seehafer
+    length_scale = 2.0  # Normalising length scale for Seehafer
 
     length_scale_x = 2.0 * nresol_x * pixelsize_x
     # Length scale in x direction for Seehafer
@@ -53,19 +53,13 @@ def magnetic_field(
     # Normalised length scale in y direction for Seehafer
 
     if xmin != 0.0 or ymin != 0.0 or zmin != 0.0:
-        raise ValueError("Magnotgram not centred at origin")
+        raise ValueError("Magnetogram not centred at origin")
     if not (xmax > 0.0 or ymax > 0.0 or zmax > 0.0):
-        raise ValueError("Magnetrogram in wrong quadrant of Seehafer mirroring")
+        raise ValueError("Magnetogram in wrong quadrant of Seehafer mirroring")
 
-    x_arr: np.ndarray[np.float64, np.dtype[np.float64]] = (
-        np.arange(2.0 * nresol_x) * 2.0 * xmax / (2.0 * nresol_x - 1) - xmax
-    )
-    y_arr: np.ndarray[np.float64, np.dtype[np.float64]] = (
-        np.arange(2.0 * nresol_y) * 2.0 * ymax / (2.0 * nresol_y - 1) - ymax
-    )
-    z_arr: np.ndarray[np.float64, np.dtype[np.float64]] = (
-        np.arange(nresol_z) * (zmax - zmin) / (nresol_z - 1) + zmin
-    )
+    x_arr = np.arange(2.0 * nresol_x) * 2.0 * xmax / (2.0 * nresol_x - 1) - xmax
+    y_arr = np.arange(2.0 * nresol_y) * 2.0 * ymax / (2.0 * nresol_y - 1) - ymax
+    z_arr = np.arange(nresol_z) * (zmax - zmin) / (nresol_z - 1) + zmin
 
     ratiodzls = deltaz / length_scale  # Normalised deltaz
 
