@@ -38,7 +38,7 @@ def read_issi_rmhd(path: str) -> Data3D:
     # print(data['info_boundary'])
     # print(data["info_array"])
 
-    pixelsize = 64.0
+    pixelsize_z_km = 64.0
 
     # bx_xlen: np.int16 = data_bx.shape[1]
     # bx_ylen: np.int16 = data_bx.shape[0]
@@ -81,27 +81,36 @@ def read_issi_rmhd(path: str) -> Data3D:
     pixelsize_x = np.abs(xmax - xmin) / nresol_x  # Data pixel size in x direction
     pixelsize_y = np.abs(ymax - ymin) / nresol_y  # Data pixel size in y direction
 
+    pixelsize_x_km = 192.0
+    pixelsize_y_km = 192.0
+    xmax_km = nresol_x * pixelsize_x_km
+    ymax_km = nresol_y * pixelsize_y_km
+
     if pixelsize_x != pixelsize_y:
         raise ValueError(("directional pixel sizes of data do not match"))
 
-    nresol_z = int(np.floor(10000.0 / pixelsize))
-    # Artifical upper boundary at 10Mm outside of corona
-    z0_index = np.floor(2000.0 / pixelsize)  # Height of Transition Region at 2Mm
+    zmax_km = 10000.0
+    z0_km = 2000.0
 
     if xmax == L:
-        zmax = nresol_z / nresol_x
-        z0 = z0_index / nresol_x
+        zmax = zmax_km / xmax_km
+        z0 = z0_km / xmax_km
+        pixelsize_z = pixelsize_z_km / xmax_km
     if ymax == L:
-        zmax = nresol_z / nresol_y
-        z0 = z0_index / nresol_y
-    else:
-        z0 = 0.0
+        zmax = zmax_km / ymax_km
+        z0 = z0_km / ymax_km
+        pixelsize_z = pixelsize_z_km / ymax_km
 
-    pixelsize_z = abs(zmax - zmin) / nresol_z  # Data pixel size in z direction
+    nresol_z = int(np.floor(zmax / pixelsize_z))
 
-    if pixelsize_z != pixelsize_x:
-        raise ValueError("nresol_z and zmax do not match")
-
+    print("xmax km", xmax_km)
+    print("ymax km", ymax_km)
+    print("zmax km", zmax_km)
+    print("zmax km / pixelsize", zmax_km / pixelsize_z)
+    print("zmax / pixelsize_z", zmax / pixelsize_z)
+    print(pixelsize_x, pixelsize_x_km)
+    print(pixelsize_y, pixelsize_y_km)
+    print(pixelsize_z, pixelsize_z_km)
     nf_max = min(nresol_x, nresol_y)
 
     return Data3D(
@@ -142,12 +151,12 @@ def read_issi_analytical(path: str) -> Data3D:
 
     # Y-axis size first as this corresponds to number of rows, then X-Axis size corresponding t number of columns
 
-    # print(data["info_unit"])
-    # print(data["info_pixel"])
+    print(data["info_unit"])
+    print(data["info_pixel"])
     # print(data['info_boundary'])
     # print(data["info_array"])
 
-    pixelsize = 40.0
+    pixelsize_z_km = 40.0
 
     # bx_xlen: np.int16 = data_bx.shape[1]
     # bx_ylen: np.int16 = data_bx.shape[0]
@@ -192,26 +201,34 @@ def read_issi_analytical(path: str) -> Data3D:
     if pixelsize_x != pixelsize_y:
         raise ValueError("directional pixel sizes of data do not match")
 
-    nresol_z = int(np.floor(10000.0 / pixelsize))
-    # Artifical upper boundary at 10Mm outside of corona
-    z0_index = math.floor(2000.0 / pixelsize)  # Height of Transition Region at 2Mm
+    pixelsize_x_km = 40.0
+    pixelsize_y_km = 40.0
+    xmax_km = nresol_x * pixelsize_x_km
+    ymax_km = nresol_y * pixelsize_y_km
+
+    zmax_km = 10000.0
+    z0_km = 2000.0
 
     if xmax == L:
-        zmax = nresol_z / nresol_x
-        z0 = z0_index / nresol_x
+        zmax = zmax_km / xmax_km
+        z0 = z0_km / xmax_km
+        pixelsize_z = pixelsize_z_km / xmax_km
     if ymax == L:
-        zmax = nresol_z / nresol_y
-        z0 = z0_index / nresol_y
-    else:
-        z0 = 0.0
+        zmax = zmax_km / ymax_km
+        z0 = z0_km / ymax_km
+        pixelsize_z = pixelsize_z_km / ymax_km
 
-    pixelsize_z = np.abs(zmax - zmin) / nresol_z  # Data pixel size in z direction
+    nresol_z = int(np.floor(zmax / pixelsize_z))
 
-    if pixelsize_z != pixelsize_x:
-        print("nresol_z and zmax do not match")
-        raise ValueError
-
-    nf_max = int(min(nresol_x, nresol_y))
+    print("xmax km", xmax_km)
+    print("ymax km", ymax_km)
+    print("zmax km", zmax_km)
+    print("zmax km / pixelsize", zmax_km / pixelsize_z)
+    print("zmax / pixelsize_z", zmax / pixelsize_z)
+    print(pixelsize_x, pixelsize_x_km)
+    print(pixelsize_y, pixelsize_y_km)
+    print(pixelsize_z, pixelsize_z_km)
+    nf_max = min(nresol_x, nresol_y)
 
     return Data3D(
         data_bx,
@@ -312,24 +329,33 @@ def read_fits_soar(path: str, header: bool = False) -> DataBz:
         print("Directional pixel sizes of data do not match")
         raise ValueError
 
-    nresol_z = math.floor(
-        10000.0 / (pixelsize_km)
-    )  # Artifical upper boundary at 10Mm from photosphere
-    z0_index = math.floor(
-        2000.0 / (pixelsize_km)
-    )  # Centre of region over which transition from NFF to FF takes place at 2Mm from photosphere
+    xmax_km = nresol_x * pixelsize_km
+    ymax_km = nresol_y * pixelsize_km
+    pixelsize_z_km = 90.0
+
+    zmax_km = 10000.0
+    z0_km = 2000.0
 
     if xmax == length_scale:
-        zmax = nresol_z / nresol_x
-        z0 = z0_index / nresol_x
+        zmax = zmax_km / xmax_km
+        z0 = z0_km / xmax_km
+        pixelsize_z = pixelsize_z_km / xmax_km
     if ymax == length_scale:
-        zmax = nresol_z / nresol_y
-        z0 = z0_index / nresol_y
+        zmax = zmax_km / ymax_km
+        z0 = z0_km / ymax_km
+        pixelsize_z = pixelsize_z_km / ymax_km
 
-    pixelsize_z = (
-        abs(zmax - zmin) / nresol_z
-    )  # Data pixel size in z direction in relation to zmin and zmax
+    nresol_z = int(np.floor(zmax / pixelsize_z))
 
+    print("xmax km", xmax_km)
+    print("ymax km", ymax_km)
+    print("zmax km", zmax_km)
+    print("zmax km / pixelsize", zmax_km / pixelsize_z)
+    print("zmax / pixelsize_z", zmax / pixelsize_z)
+    print(pixelsize_x, pixelsize_km)
+    print(pixelsize_y, pixelsize_km)
+    print(pixelsize_z, pixelsize_z_km)
+    nf_max = min(nresol_x, nresol_y)
     # Calulate parameters in Mm for checking purposes
 
     # xmax_Mm = nresol_x * pixelsize_km / 1000.0
