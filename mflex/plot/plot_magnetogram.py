@@ -87,6 +87,7 @@ def plot_fieldlines_grid(
     alpha: float,
     nf_max: float,
     stepsize: float = 0.1,
+    view: str = "top",
 ):
     """
     Returns 3D plot of photospheric magnetic field including field line extrapolation.
@@ -113,8 +114,13 @@ def plot_fieldlines_grid(
     ax.set_ylabel("y")
     ax.set_zlabel("z")
     ax.set_zlim([zmin, zmax])
-    ax.view_init(90, -90)
-    # ax.view_init(30, 240, 0)
+
+    if view == "top":
+        ax.view_init(90, -90)
+    if view == "angular":
+        ax.view_init(30, 240, 0)
+    if view == "side":
+        ax.view_init(0, -90)
     ax.set_box_aspect((xmax, ymax, 1))
 
     x_0 = 1.0 * 10**-8
@@ -174,8 +180,8 @@ def plot_fieldlines_grid(
                 fieldline_y,
                 fieldline_x,
                 fieldline_z,
-                color="yellow",
-                linewidth=0.5,
+                color="magenta",
+                linewidth=0.25,
                 zorder=4000,
             )
 
