@@ -86,6 +86,7 @@ def plot_fieldlines_grid(
     b: float,
     alpha: float,
     nf_max: float,
+    stepsize: float = 0.1,
 ):
     """
     Returns 3D plot of photospheric magnetic field including field line extrapolation.
@@ -118,8 +119,8 @@ def plot_fieldlines_grid(
 
     x_0 = 1.0 * 10**-8
     y_0 = 1.0 * 10**-8
-    dx = 0.5
-    dy = 0.5
+    dx = stepsize
+    dy = stepsize
     nlinesmaxx = math.floor(xmax / dx)
     nlinesmaxy = math.floor(ymax / dy)
 
