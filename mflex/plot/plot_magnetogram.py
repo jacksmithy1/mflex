@@ -118,8 +118,8 @@ def plot_fieldlines_grid(
 
     x_0 = 1.0 * 10**-8
     y_0 = 1.0 * 10**-8
-    dx = 0.05
-    dy = 0.05
+    dx = 0.5
+    dy = 0.5
     nlinesmaxx = math.floor(xmax / dx)
     nlinesmaxy = math.floor(ymax / dy)
 
