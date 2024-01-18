@@ -119,24 +119,40 @@ def den(
 
 
 def btemp_linear(z, temps, heights):
-    t1, t2, t3, t4 = temps[0], temps[1], temps[2], temps[3]
-    h1, h2, h3, h4 = heights[0], heights[1], heights[2], heights[3]
+    if len(heights) != len(temps):
+        raise ValueError("Number of heights and temperatures do not match")
 
-    m1 = (t2 - t1) / (h2 - h1)
-    m2 = (t3 - t2) / (h3 - h2)
-    m3 = (t4 - t3) / (h4 - h3)
+    h_index = 0
 
-    if z >= h1 and z <= h2:
-        t = t1 + m1 * (z - h1)
-    elif z >= h2 and z <= h3:
-        t = t2 + m2 * (z - h2)
-    elif z >= h3 and z <= h4:
-        t = t3 + m3 * (z - h3)
-    else:
-        print("z= " + str(z) + " not in range")
-        raise ValueError
+    for i in range(0, len(heights) - 1):
+        if z >= heights[i] and z <= heights[i + 1]:
+            h_index = i
 
-    return t
+    return temps[h_index] + (temps[h_index + 1] - temps[h_index]) / (
+        heights[h_index + 1] - heights[h_index]
+    ) * (z - heights[h_index])
+
+
+def bpressure_linear(z, temps, heights, t0, h, t_photosphere):
+    for i in range(0, len(heights) - 1):
+        if z >= heights[i] and z <= heights[i + 1]:
+            h_index = i
+
+    q = (temps[h_index + 1] - temps[h_index]) / (
+        heights[h_index + 1] - heights[h_index]
+    )
+
+    return (
+        (temps[h_index] + q * (z - heights[h_index]))
+        / (temps[h_index] - heights[h_index] * q)
+    ) ** (-t0 / (h * t_photosphere))
+
+
+def bdensity_linear(z, temps, heights, h, T0, t_photosphere):
+    temp0 = t_photosphere
+    dummypres = bpressure_linear(z, temps, heights, T0, h, t_photosphere)
+    dummytemp = btemp_linear(z, temps, heights)
+    return dummypres / dummytemp * temp0
 
 
 def temp(z, z0, deltaz, a, b, bz, bzdotgradbz, beta0, h, T0, T1, T_photosphere):

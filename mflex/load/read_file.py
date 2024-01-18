@@ -379,7 +379,7 @@ def read_issi_analytical_zbased(path: str) -> Data3D:
     xmax_km = nresol_x * pixelsize_x_km
     ymax_km = nresol_y * pixelsize_y_km
 
-    zmax_km = 10000.0
+    zmax_km = 2000.0
     z0_km = 2000.0
 
     zmax = L
