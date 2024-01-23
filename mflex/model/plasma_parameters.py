@@ -133,24 +133,30 @@ def btemp_linear(z, temps, heights):
     ) * (z - heights[h_index])
 
 
-def bpressure_linear(z, temps, heights, t0, h, t_photosphere):
+def bpressure_linear(z, temps, heights, t0, h):
     for i in range(0, len(heights) - 1):
         if z >= heights[i] and z <= heights[i + 1]:
             h_index = i
 
+    pro = 1.0
+    for j in range(0, h_index):
+        qj = (temps[j + 1] - temps[j]) / (heights[j + 1] - heights[j])
+        expj = -t0 / (h * qj)
+        tempj = (abs(temps[j] + qj * (heights[j + 1] - heights[j])) / temps[j]) ** expj
+        pro = pro * tempj
+
     q = (temps[h_index + 1] - temps[h_index]) / (
         heights[h_index + 1] - heights[h_index]
     )
+    tempz = (abs(temps[h_index] + q * (z - heights[h_index])) / temps[h_index]) ** (
+        -t0 / (h * q)
+    )
+    return pro * tempz
 
-    return (
-        (temps[h_index] + q * (z - heights[h_index]))
-        / (temps[h_index] - heights[h_index] * q)
-    ) ** (-t0 / (h * t_photosphere))
 
-
-def bdensity_linear(z, temps, heights, h, T0, t_photosphere):
+def bdensity_linear(z, temps, heights, t0, h, t_photosphere):
     temp0 = t_photosphere
-    dummypres = bpressure_linear(z, temps, heights, T0, h, t_photosphere)
+    dummypres = bpressure_linear(z, temps, heights, t0, h)
     dummytemp = btemp_linear(z, temps, heights)
     return dummypres / dummytemp * temp0
 
