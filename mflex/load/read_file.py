@@ -259,7 +259,8 @@ def read_issi_analytical(path: str) -> Data3D:
     #    nresol_y = bx_ylen  # Data resolution in y direction
     nresol_x = bz_xlen
     nresol_y = bz_ylen
-    L = 1.0
+    nresol_z = 50
+    L = 1000.0
 
     pixelsize_z_km = 40.0
     pixelsize_x_km = 40.0
@@ -274,33 +275,106 @@ def read_issi_analytical(path: str) -> Data3D:
     ymax = None
     zmax = None
 
-    zmax_km = 10000.0
+    zmax_km = 2000.0
     z0_km = 2000.0
 
-    if nresol_x < nresol_y:
-        xmax = L  # Maximum value of x in data length scale, not in Mm
-        ymax = nresol_y / nresol_x  # Maximum value of y in data length scale, not in Mm
-        zmax = zmax_km / xmax_km
-        z0 = z0_km / xmax_km
-        pixelsize_z = pixelsize_z_km / xmax_km
-    if nresol_y < nresol_x:
-        ymax = L
-        xmax = nresol_x / nresol_y
-        zmax = zmax_km / ymax_km
-        z0 = z0_km / ymax_km
-        pixelsize_z = pixelsize_z_km / ymax_km
-    if nresol_y == nresol_x:
-        xmax = L
-        ymax = L
-        zmax = zmax_km / ymax_km
-        z0 = z0_km / ymax_km
-        pixelsize_z = pixelsize_z_km / ymax_km
+    xmax = xmax_km / L
+    ymax = ymax_km / L
+    zmax = zmax_km / L
+    z0 = z0_km / L
 
     pixelsize_x = np.abs(xmax - xmin) / nresol_x  # Data pixel size in x direction
     pixelsize_y = np.abs(ymax - ymin) / nresol_y  # Data pixel size in y direction
+    pixelsize_z = np.abs(zmax - zmin) / nresol_z
 
-    nresol_z = int(np.floor(zmax / pixelsize_z))
     nf_max = min(nresol_x, nresol_y)
+
+    print("xmax, ymax, zmax", xmax, ymax, zmax)
+    print("xmax_km, ymax_km, zmax_km", xmax_km, ymax_km, zmax_km)
+    print("nresol_x, nresol_y, nresol_z", nresol_x, nresol_y, nresol_z)
+    print("pixelsize_x, pixelsize_x_km", pixelsize_x, pixelsize_x_km)
+    print("pixelsize_y, pixelsize_y_km", pixelsize_y, pixelsize_y_km)
+    print("pixelsize_z, pixelsize_z_km", pixelsize_z, pixelsize_z_km)
+
+    return Data3D(
+        data_bx,
+        data_by,
+        data_bz,
+        nresol_x,
+        nresol_y,
+        nresol_z,
+        pixelsize_x,
+        pixelsize_y,
+        pixelsize_z,
+        nf_max,
+        xmin,
+        xmax,
+        ymin,
+        ymax,
+        zmin,
+        zmax,
+        z0,
+    )
+
+
+def read_issi_analytical_alt(path: str) -> Data3D:
+    """
+    Returns dataclass Data3D extracted from Analytical_boundary_data.sav
+    provided by ISSI Team.
+    """
+    data = scipy.io.readsav(path, python_dict=True, verbose=True)
+
+    data_bz = data["b2dz5"]  # [0:nresol_y,0:nresol_x]
+    # Y-axis size first as this corresponds to number of rows, then X-Axis size corresponding t number of columns
+    data_bx = data["b2dx5"]  # [0:nresol_y,0:nresol_x]
+    # Y-axis size first as this corresponds to number of rows, then X-Axis size corresponding t number of columns
+    data_by = data["b2dy5"]  # [0:nresol_y,0:nresol_x]
+    # Y-axis size first as this corresponds to number of rows, then X-Axis size corresponding t number of columns
+    # scale_height = data['h3d']
+
+    # Y-axis size first as this corresponds to number of rows, then X-Axis size corresponding t number of columns
+
+    print(data["info_unit"])
+    print(data["info_pixel"])
+    # print(data['info_boundary'])
+    # print(data["info_array"]
+
+    nresol_x = data_bz.shape[1]
+    nresol_y = data_bz.shape[0]
+
+    pixelsize_z_km = 40.0
+    pixelsize_x_km = 40.0
+    pixelsize_y_km = 40.0
+
+    xmin = 0.0  # Minimum value of x in data length scale, not in Mm
+    ymin = 0.0  # Minimum value of y in data length scale, not in Mm
+    zmin = 0.0  # Minimum value of z in data length scale, not in Mm
+
+    xmax_Mm = nresol_x * pixelsize_x_km / 1000.0
+    ymax_Mm = nresol_y * pixelsize_y_km / 1000.0
+    zmax_Mm = 2.0
+
+    nresol_z = int(np.floor(zmax_Mm * 1000.0 / pixelsize_z_km))
+
+    L = 1.6
+
+    xmax = xmax_Mm / L
+    ymax = ymax_Mm / L
+    zmax = zmax_Mm / L
+
+    z0 = zmax
+    pixelsize_x = pixelsize_x_km / 1000.0 / L
+    pixelsize_y = pixelsize_y_km / 1000.0 / L
+    pixelsize_z = pixelsize_z_km / 1000.0 / L
+
+    nf_max = min(nresol_x, nresol_y)
+
+    print("xmax, ymax, zmax", xmax, ymax, zmax)
+    print("xmax_Mm, ymax_Mm, zmax_Mm", xmax_Mm, ymax_Mm, zmax_Mm)
+    print("nresol_x, nresol_y, nresol_z", nresol_x, nresol_y, nresol_z)
+    print("pixelsize_x, pixelsize_x_km", pixelsize_x, pixelsize_x_km)
+    print("pixelsize_y, pixelsize_y_km", pixelsize_y, pixelsize_y_km)
+    print("pixelsize_z, pixelsize_z_km", pixelsize_z, pixelsize_z_km)
 
     return Data3D(
         data_bx,
@@ -394,9 +468,6 @@ def read_issi_analytical_zbased(path: str) -> Data3D:
 
     pixelsize_x = pixelsize_x_km / zmax_km  # Data pixel size in x direction
     pixelsize_y = pixelsize_y_km / zmax_km  # Data pixel size in y direction
-
-    if pixelsize_x != pixelsize_y:
-        raise ValueError(("directional pixel sizes of data do not match"))
 
     nf_max = min(nresol_x, nresol_y)
 
