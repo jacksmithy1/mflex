@@ -13,6 +13,7 @@ from mflex.model.field.utility.poloidal import (
     phi_hypgeo,
     dphidz_hypgeo,
 )
+from mflex.plot.plot_magnetogram import plot_magnetogram_boundary
 
 
 def magnetic_field(
@@ -34,7 +35,6 @@ def magnetic_field(
     pixelsize_x: np.float64,
     pixelsize_y: np.float64,
     nf_max: int,
-    L: np.float64,
 ) -> np.ndarray[np.float64, np.dtype[np.float64]]:
     """
     Given the Seehafer-mirrored photospheric magnetic field data_bz,
@@ -51,6 +51,12 @@ def magnetic_field(
     # Normalised length scale in x direction for Seehafer
     length_scale_y_norm = length_scale_y / length_scale
     # Normalised length scale in y direction for Seehafer
+
+    print("length scale", length_scale)
+    print("length scale x", length_scale_x)
+    print("length scale y", length_scale_y)
+    print("length scale x norm", length_scale_x_norm)
+    print("length scale y norm", length_scale_y_norm)
 
     print("length scale", length_scale)
     print("length scale x", length_scale_x)
@@ -190,7 +196,7 @@ def magnetic_field(
     return b_arr, bz_derivs
 
 
-def magnetic_field_ISSI_analytical(
+def magnetic_field_alt(
     data_bz: np.ndarray[np.float64, np.dtype[np.float64]],
     z0: np.float64,
     deltaz: np.float64,
@@ -217,15 +223,17 @@ def magnetic_field_ISSI_analytical(
     series expansion using anm, phi and dphidz.
     """
 
+    data_bz_seehafer = mirror_magnetogram(
+        data_bz, xmin, xmax, ymin, ymax, nresol_x, nresol_y
+    )
+
     length_scale = 2.0 * L  # Normalising length scale for Seehafer
-    length_scale_x = 2.0 * xmax * L
-    # Length scale in x direction for Seehafer
-    length_scale_y = 2.0 * ymax * L
-    # Length scale in y direction for Seehafer
+
+    length_scale_x = 2.0 * nresol_x * pixelsize_x * L
+    length_scale_y = 2.0 * nresol_y * pixelsize_y * L
+
     length_scale_x_norm = length_scale_x / length_scale
-    # Normalised length scale in x direction for Seehafer
     length_scale_y_norm = length_scale_y / length_scale
-    # Normalised length scale in y direction for Seehafer
 
     print("length scale", length_scale)
     print("length scale x", length_scale_x)
@@ -238,13 +246,15 @@ def magnetic_field_ISSI_analytical(
     if not (xmax > 0.0 or ymax > 0.0 or zmax > 0.0):
         raise ValueError("Magnetogram in wrong quadrant of Seehafer mirroring")
 
+    print("xmin, xmax, ymin, ymax, zmin, zmax ", xmin, xmax, ymin, ymax, zmin, zmax)
+
     x_arr = np.arange(2.0 * nresol_x) * 2.0 * xmax / (2.0 * nresol_x - 1) - xmax
     y_arr = np.arange(2.0 * nresol_y) * 2.0 * ymax / (2.0 * nresol_y - 1) - ymax
     z_arr = np.arange(nresol_z) * (zmax - zmin) / (nresol_z - 1) + zmin
 
     ratiodzls = deltaz / length_scale
 
-    alpha = alpha / length_scale  # Normalised deltaz
+    alpha = alpha * length_scale / L  # Normalised deltaz
 
     # kx, ky arrays, coefficients for x and y in Fourier series
 
@@ -265,9 +275,6 @@ def magnetic_field_ISSI_analytical(
     p_arr = 0.5 * ratiodzls * np.sqrt(k2_arr * (1.0 - a - a * b) - alpha**2)
     q_arr = 0.5 * ratiodzls * np.sqrt(k2_arr * (1.0 - a + a * b) - alpha**2)
 
-    data_bz_seehafer = mirror_magnetogram(
-        data_bz, xmin, xmax, ymin, ymax, nresol_x, nresol_y
-    )
     anm = fft_coeff_seehafer(
         data_bz_seehafer, k2_arr, 2 * nresol_x, 2 * nresol_y, nf_max
     )
