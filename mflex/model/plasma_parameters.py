@@ -79,8 +79,7 @@ def deltaden(
     """
 
     return (
-        dfdz(z, z0, deltaz, a, b) * bz**2.0 / 2.0
-        + f(z, z0, deltaz, a, b) * bzdotgradbz
+        dfdz(z, z0, deltaz, a, b) * bz**2.0 / 2.0 + f(z, z0, deltaz, a, b) * bzdotgradbz
     )  # / (g * 4.0 * np.pi)
 
 

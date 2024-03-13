@@ -63,8 +63,8 @@ def fft_coeff_seehafer(
     else:
         centre_y = int((nresol_y + 1) / 2)
 
-    for ix in range(1, nf_max):
-        for iy in range(1, nf_max):
+    for ix in range(nf_max):
+        for iy in range(nf_max):
             anm[iy, ix] = (
                 -signal[centre_y + iy, centre_x + ix]
                 + signal[centre_y + iy, centre_x - ix]

@@ -121,7 +121,7 @@ def plot_fieldlines_grid(
         ax.view_init(30, 240, 0)
     if view == "side":
         ax.view_init(0, -90)
-    ax.set_box_aspect((xmax, ymax, zmax))
+    ax.set_box_aspect((xmax, ymax, 2 * zmax))
 
     x_0 = 1.0 * 10**-8
     y_0 = 1.0 * 10**-8
@@ -253,16 +253,16 @@ def plot_fieldlines_polar(
     ax.set_ylabel("y")
     ax.set_zlabel("z")
     # ax.set_zlim([zmin, zmax])
-    # ax.view_init(90, -90)
-    ax.view_init(30, -115, 0)
+    ax.view_init(0, -90)
+    # ax.view_init(30, -115, 0)
 
-    ax.set_box_aspect((1, 1, 1))
+    ax.set_box_aspect((2, 2, 2))
 
-    nlinesmaxr = 4
-    nlinesmaxphi = 3
+    nlinesmaxr = 2
+    nlinesmaxphi = 5
     x_0 = 1.2 / np.pi + 0.18
     y_0 = 1.2 / np.pi + 0.18
-    dr = 1.0 * np.sqrt(1 / 30.0) / (nlinesmaxr + 1.0)
+    dr = 1.0 / 2.0 * np.sqrt(1 / 10.0) / (nlinesmaxr + 1.0)
     dphi = 2.0 * np.pi / nlinesmaxphi
 
     # Limit fieldline plot to original data size (rather than Seehafer size)
@@ -324,11 +324,11 @@ def plot_fieldlines_polar(
                     zorder=4000,
                 )
 
-    nlinesmaxr = 4
-    nlinesmaxphi = 3
+    nlinesmaxr = 2
+    nlinesmaxphi = 5
     x_0 = 1.2 / np.pi + 1.05
     y_0 = 1.2 / np.pi + 1.05
-    dr = 1.0 * np.sqrt(1 / 30.0) / (nlinesmaxr + 1.0)
+    dr = 1.0 / 2.0 * np.sqrt(1 / 10.0) / (nlinesmaxr + 1.0)
     dphi = 2.0 * np.pi / nlinesmaxphi
 
     for ilinesr in range(0, nlinesmaxr):
@@ -383,8 +383,8 @@ def plot_fieldlines_polar(
     plt.savefig(plotname, dpi=300)
     """
     ax.set_zlim([zmin, zmax])
-    ax.view_init(0, -90)
-    ax.set_box_aspect((2, 2, 2))
+    # ax.view_init(0, -90)
+
     """
     plotname = "/Users/lilli/Desktop/mflex/nw2019_paper/figure4" + name + ".pnßg"
     plt.savefig(plotname, dpi=300)"""
@@ -460,8 +460,8 @@ def plot_fieldlines_polar_large(
     # ax.view_init(90, -90)
     ax.view_init(30, -115, 0)
 
-    nlinesmaxr = 3
-    nlinesmaxphi = 4
+    nlinesmaxr = 2
+    nlinesmaxphi = 5
     x_0 = (1.2 / np.pi + 1.0) * 4.0 + 0.8
     y_0 = (1.2 / np.pi + 1.0) * 4.0 + 0.8
     dr = 1.0 / 2.0 / (nlinesmaxr + 1.0)
@@ -546,8 +546,8 @@ def plot_fieldlines_polar_large(
                     zorder=4000,
                 )"""
 
-    nlinesmaxr = 3
-    nlinesmaxphi = 4
+    nlinesmaxr = 2
+    nlinesmaxphi = 5
     x_0 = (1.2 / np.pi + 1.0) * 4.0 + 0.8 - 2.6
     y_0 = (1.2 / np.pi + 1.0) * 4.0 + 0.8 - 2.6
     dr = 1.0 / 2.0 / (nlinesmaxr + 1.0)
@@ -625,7 +625,7 @@ def plot_fieldlines_polar_large(
     plt.savefig(plotname, dpi=300)
     """
     ax.set_zlim([zmin, zmax])
-    ax.set_box_aspect((10, 10, 2))
+    ax.set_box_aspect((10, 10, 3))
     ax.view_init(0, -90)
 
     """

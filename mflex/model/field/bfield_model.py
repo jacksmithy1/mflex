@@ -252,9 +252,13 @@ def magnetic_field_alt(
     y_arr = np.arange(2.0 * nresol_y) * 2.0 * ymax / (2.0 * nresol_y - 1) - ymax
     z_arr = np.arange(nresol_z) * (zmax - zmin) / (nresol_z - 1) + zmin
 
-    ratiodzls = deltaz / length_scale
+    ratiodzls = deltaz  # Normalised deltaz
 
-    alpha = alpha * length_scale / L  # Normalised deltaz
+    alpha = alpha * length_scale / L
+
+    # alpha_issi / L_issi = alpha_lilli / L_lilli,See = alpha_lilli / (2*L_lilli)
+    # means that we have alpha_lilli = 2* alpha_issi * L_lilli / L_issi
+    # with hopefully L_lilli / L_issi = length_scale / (2 L) = 1.0
 
     # kx, ky arrays, coefficients for x and y in Fourier series
 
@@ -270,7 +274,9 @@ def magnetic_field_alt(
     # kx^2 + ky^2
 
     k2_arr = np.outer(ky_arr**2, one_arr) + np.outer(one_arr, kx_arr**2)
-    k2_arr[0, 0] = (np.pi / length_scale) ** 2
+    k2_arr[0, 0] = (np.pi / length_scale_x_norm) ** 2 + (
+        np.pi / length_scale_y_norm
+    ) ** 2
 
     p_arr = 0.5 * ratiodzls * np.sqrt(k2_arr * (1.0 - a - a * b) - alpha**2)
     q_arr = 0.5 * ratiodzls * np.sqrt(k2_arr * (1.0 - a + a * b) - alpha**2)
@@ -283,11 +289,11 @@ def magnetic_field_alt(
     # [0:nf_max,0:nf_max, 0:nresol_z]
     dphidz_arr = np.zeros((nf_max, nf_max, nresol_z))  # [0:nf_max,0:nf_max, 0:nresol_z]
 
-    for iy in range(0, int(nf_max)):
-        for ix in range(0, int(nf_max)):
+    for iy in range(0, nf_max):
+        for ix in range(0, nf_max):
             q = q_arr[iy, ix]
             p = p_arr[iy, ix]
-            for iz in range(0, int(nresol_z)):
+            for iz in range(0, nresol_z):
                 z = z_arr[iz]
                 phi_arr[iy, ix, iz] = phi(z, p, q, z0, deltaz)
                 dphidz_arr[iy, ix, iz] = dphidz(z, p, q, z0, deltaz)
@@ -363,6 +369,7 @@ def magnetic_field_low(
     pixelsize_x: np.float64,
     pixelsize_y: np.float64,
     nf_max: int,
+    L: np.float64,
 ) -> np.ndarray[np.float64, np.dtype[np.float64]]:
     """
     Given the Seehafer-mirrored photospheric magnetic field data_bz,
@@ -370,15 +377,19 @@ def magnetic_field_low(
     series expansion using anm, phi and dphidz.
     """
 
-    length_scale = np.float64(2.0)  # Normalising length scale for Seehafer
-    length_scale_x = 2.0 * nresol_x * pixelsize_x
-    # Length scale in x direction for Seehafer
-    length_scale_y = 2.0 * nresol_y * pixelsize_y
-    # Length scale in y direction for Seehafer
+    length_scale = 2.0 * L  # Normalising length scale for Seehafer
+
+    length_scale_x = 2.0 * nresol_x * pixelsize_x * L
+    length_scale_y = 2.0 * nresol_y * pixelsize_y * L
+
     length_scale_x_norm = length_scale_x / length_scale
-    # Normalised length scale in x direction for Seehafer
     length_scale_y_norm = length_scale_y / length_scale
-    # Normalised length scale in y direction for Seehafer
+
+    print("length scale", length_scale)
+    print("length scale x", length_scale_x)
+    print("length scale y", length_scale_y)
+    print("length scale x norm", length_scale_x_norm)
+    print("length scale y norm", length_scale_y_norm)
 
     if xmin != 0.0 or ymin != 0.0 or zmin != 0.0:
         raise ValueError("Magnotgram not centred at origin")
@@ -390,7 +401,7 @@ def magnetic_field_low(
     z_arr = np.arange(nresol_z) * (zmax - zmin) / (nresol_z - 1) + zmin
 
     deltaz = 1.0 / kappa
-    ratiodzls = deltaz / length_scale  # Normalised deltaz
+    ratiodzls = deltaz / L  # Normalised deltaz
 
     # kx, ky arrays, coefficients for x and y in Fourier series
 
@@ -406,7 +417,9 @@ def magnetic_field_low(
     # kx^2 + ky^2
 
     k2_arr = np.outer(ky_arr**2, one_arr) + np.outer(one_arr, kx_arr**2)
-    k2_arr[0, 0] = (np.pi / length_scale) ** 2
+    k2_arr[0, 0] = (np.pi / length_scale_x_norm) ** 2 + (
+        np.pi / length_scale_y_norm
+    ) ** 2
 
     p_arr = 0.5 * ratiodzls * np.sqrt(k2_arr - alpha**2)
     q_arr = 0.5 * ratiodzls * np.sqrt(k2_arr * a)
@@ -432,6 +445,7 @@ def magnetic_field_low(
                 dphidz_arr[iy, ix, iz] = dphidz_low(z, p, q, kappa)
 
     b_arr = np.zeros((2 * nresol_y, 2 * nresol_x, nresol_z, 3))
+    bz_derivs = np.zeros((2 * nresol_y, 2 * nresol_x, nresol_z, 3))
 
     sin_x = np.sin(np.outer(kx_arr, x_arr))
     sin_y = np.sin(np.outer(ky_arr, y_arr))
@@ -465,7 +479,21 @@ def magnetic_field_low(
         )
         # [0:2*nresol_y, 0:nf_max]*([0:nf_max, 0:nf_max]*[0:nf_max, 0:2*nresol_x]) = [0:2*nresol_y, 0:2*nresol_x]
 
-    return b_arr
+        coeffs5 = np.multiply(np.multiply(k2_arr, dphidz_arr[:, :, iz]), anm)
+        bz_derivs[:, :, iz, 2] = np.matmul(sin_y.T, np.matmul(coeffs5, sin_x))
+
+        coeffs6 = np.multiply(
+            np.multiply(np.multiply(k2_arr, phi_arr[:, :, iz]), anm), kx_grid
+        )
+        bz_derivs[:, :, iz, 1] = np.matmul(sin_y.T, np.matmul(coeffs6, cos_x))
+
+        coeffs7 = np.multiply(
+            np.multiply(np.multiply(k2_arr, phi_arr[:, :, iz]), anm),
+            ky_grid,
+        )
+        bz_derivs[:, :, iz, 0] = np.matmul(cos_y.T, np.matmul(coeffs7, sin_x))
+
+    return b_arr, bz_derivs
 
 
 def magnetic_field_hypergeo(
@@ -598,6 +626,8 @@ def magnetic_field_hypergeo(
     return b_arr
 
 
+"""
+
 def bz_partial_derivatives(
     data_bz: np.ndarray[np.float64, np.dtype[np.float64]],
     z0: np.float64,
@@ -618,12 +648,12 @@ def bz_partial_derivatives(
     pixelsize_y: np.float64,
     nf_max: int,
 ) -> np.ndarray[np.float64, np.dtype[np.float64]]:
-    """
-    Given the Seehafer-mirrored photospheric magnetic field data_bz,
-    returns partial derivatives of magnetic field vector z-component
-    [dBzdy, dBzdx, dBzdz] calculated from series expansion using anm,
-    phi and dphidz.
-    """
+    
+    #Given the Seehafer-mirrored photospheric magnetic field data_bz,
+    #returns partial derivatives of magnetic field vector z-component
+    #[dBzdy, dBzdx, dBzdz] calculated from series expansion using anm,
+    #phi and dphidz.
+    
 
     length_scale = 2.0  # Normalising length scale for Seehafer
     length_scale_x = 2.0 * nresol_x * float(pixelsize_x)
@@ -704,27 +734,9 @@ def bz_partial_derivatives(
             ky_grid,
         )
         bz_derivs[:, :, iz, 0] = np.matmul(cos_y.T, np.matmul(coeffs3, sin_x))
-    """
-    coeffs = (k2_arr[:, :, np.newaxis] * dphidz_arr) * anm[:, :, np.newaxis]
-    bz_derivs[:, :, :, 2] = np.einsum(
-        "jnk,ni->ijk", np.einsum("nmk,mj->jnk", coeffs, sin_x), sin_y
-    )
-
-    coeffs1 = ((k2_arr[:, :, np.newaxis] * phi_arr) * anm[:, :, np.newaxis]) * kx_grid[
-        :, :, np.newaxis
-    ]
-    bz_derivs[:, :, :, 2] = np.einsum(
-        "jnk,ni->ijk", np.einsum("nmk,mj->jnk", coeffs1, cos_x), sin_y
-    )
-
-    coeffs2 = ((k2_arr[:, :, np.newaxis] * phi_arr) * anm[:, :, np.newaxis]) * ky_grid[
-        :, :, np.newaxis
-    ]
-    bz_derivs[:, :, :, 1] = np.einsum(
-        "jnk,ni->ijk", np.einsum("nmk,mj->jnk", coeffs2, cos_x), cos_y
-    )
-    """
     return bz_derivs
+    
+"""
 
 
 def bz_partial_derivatives_hypgeo(
@@ -811,117 +823,6 @@ def bz_partial_derivatives_hypgeo(
                 z = z_arr[iz]
                 phi_arr[iy, ix, iz] = phi_hypgeo(z, p, q, z0, deltaz)
                 dphidz_arr[iy, ix, iz] = dphidz_hypgeo(z, p, q, z0, deltaz)
-
-    bz_derivs = np.zeros((2 * nresol_y, 2 * nresol_x, nresol_z, 3))
-
-    sin_x = np.sin(np.outer(kx_arr, x_arr))
-    sin_y = np.sin(np.outer(ky_arr, y_arr))
-    cos_x = np.cos(np.outer(kx_arr, x_arr))
-    cos_y = np.cos(np.outer(ky_arr, y_arr))
-
-    for iz in range(0, nresol_z):
-        coeffs = np.multiply(np.multiply(k2_arr, dphidz_arr[:, :, iz]), anm)
-        bz_derivs[:, :, iz, 2] = np.matmul(sin_y.T, np.matmul(coeffs, sin_x))
-
-        coeffs2 = np.multiply(
-            np.multiply(np.multiply(k2_arr, phi_arr[:, :, iz]), anm), kx_grid
-        )
-        bz_derivs[:, :, iz, 1] = np.matmul(sin_y.T, np.matmul(coeffs2, cos_x))
-
-        coeffs3 = np.multiply(
-            np.multiply(np.multiply(k2_arr, phi_arr[:, :, iz]), anm),
-            ky_grid,
-        )
-        bz_derivs[:, :, iz, 0] = np.matmul(cos_y.T, np.matmul(coeffs3, sin_x))
-
-    return bz_derivs
-
-
-def bz_partial_derivatives_low(
-    data_bz: np.ndarray[np.float64, np.dtype[np.float64]],
-    z0: np.float64,
-    kappa: np.float64,
-    a: float,
-    b: float,
-    alpha: float,
-    xmin: np.float64,
-    xmax: np.float64,
-    ymin: np.float64,
-    ymax: np.float64,
-    zmin: np.float64,
-    zmax: np.float64,
-    nresol_x: int,
-    nresol_y: int,
-    nresol_z: int,
-    pixelsize_x: np.float64,
-    pixelsize_y: np.float64,
-    nf_max: int,
-) -> np.ndarray[np.float64, np.dtype[np.float64]]:
-    """
-    Given the Seehafer-mirrored photospheric magnetic field data_bz,
-    returns partial derivatives of magnetic field vector z-component
-    [dBzdy, dBzdx, dBzdz] calculated from series expansion using anm,
-    phi and dphidz.
-    """
-
-    length_scale = 2.0  # Normalising length scale for Seehafer
-    length_scale_x = 2.0 * nresol_x * float(pixelsize_x)
-    # Length scale in x direction for Seehafer
-    length_scale_y = 2.0 * nresol_y * float(pixelsize_y)
-    # Length scale in y direction for Seehafer
-    length_scale_x_norm = length_scale_x / length_scale
-    # Normalised length scale in x direction for Seehafer
-    length_scale_y_norm = length_scale_y / length_scale
-    # Normalised length scale in y direction for Seehafer
-
-    if xmin != 0.0 or ymin != 0.0 or zmin != 0.0:
-        raise ValueError("Magnotgram not centred at origin")
-    if not (xmax > 0.0 or ymax > 0.0 or zmax > 0.0):
-        raise ValueError("Magnetrogram in wrong quadrant of Seehafer mirroring")
-
-    x_arr = np.arange(2.0 * nresol_x) * 2.0 * xmax / (2.0 * nresol_x - 1) - xmax
-    y_arr = np.arange(2.0 * nresol_y) * 2.0 * ymax / (2.0 * nresol_y - 1) - ymax
-    z_arr = np.arange(nresol_z) * (zmax - zmin) / (nresol_z - 1) + zmin
-
-    deltaz = 1.0 / kappa
-    ratiodzls = deltaz / length_scale  # Normalised deltaz
-
-    # kx, ky arrays, coefficients for x and y in Fourier series
-
-    kx_arr = np.arange(nf_max) * np.pi / length_scale_x_norm  # [0:nf_max]
-    ky_arr = np.arange(nf_max) * np.pi / length_scale_y_norm  # [0:nf_max]
-
-    one_arr = 0.0 * np.arange(nf_max) + 1.0
-
-    ky_grid = np.outer(ky_arr, one_arr)  # [0:nf_max, 0:nf_max]
-    kx_grid = np.outer(one_arr, kx_arr)  # [0:nf_max, 0:nf_max]
-
-    # kx^2 + ky^2
-
-    k2_arr = np.outer(ky_arr**2, one_arr) + np.outer(one_arr, kx_arr**2)
-    k2_arr[0, 0] = (np.pi / length_scale) ** 2
-
-    p_arr = 0.5 * ratiodzls * np.sqrt(k2_arr - alpha**2)
-    q_arr = 0.5 * ratiodzls * np.sqrt(k2_arr * a)
-
-    data_bz_seehafer = mirror_magnetogram(
-        data_bz, xmin, xmax, ymin, ymax, nresol_x, nresol_y
-    )
-    anm = fft_coeff_seehafer(
-        data_bz_seehafer, k2_arr, 2 * nresol_x, 2 * nresol_y, nf_max
-    )
-
-    phi_arr = np.zeros((nf_max, nf_max, nresol_z))  # [0:nf_max,0:nf_max, 0:nresol_z]
-    dphidz_arr = np.zeros((nf_max, nf_max, nresol_z))  # [0:nf_max,0:nf_max, 0:nresol_z]
-
-    for iy in range(0, nf_max):
-        for ix in range(0, nf_max):
-            q = q_arr[iy, ix]
-            p = p_arr[iy, ix]
-            for iz in range(0, nresol_z):
-                z = z_arr[iz]
-                phi_arr[iy, ix, iz] = phi_low(z, p, q, kappa)
-                dphidz_arr[iy, ix, iz] = dphidz_low(z, p, q, kappa)
 
     bz_derivs = np.zeros((2 * nresol_y, 2 * nresol_x, nresol_z, 3))
 
