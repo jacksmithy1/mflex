@@ -407,9 +407,6 @@ def magnetic_field_low(
     y_arr = np.arange(2.0 * nresol_y) * 2.0 * ymax / (2.0 * nresol_y - 1) - ymax
     z_arr = np.arange(nresol_z) * (zmax - zmin) / (nresol_z - 1) + zmin
 
-    deltaz = 1.0 / kappa
-    ratiodzls = deltaz / L  # Normalised deltaz
-
     # kx, ky arrays, coefficients for x and y in Fourier series
 
     kx_arr = np.arange(nf_max) * np.pi / length_scale_x_norm  # [0:nf_max]
@@ -428,8 +425,8 @@ def magnetic_field_low(
         np.pi / length_scale_y_norm
     ) ** 2
 
-    p_arr = 0.5 * ratiodzls * np.sqrt(k2_arr - alpha**2)
-    q_arr = 0.5 * ratiodzls * np.sqrt(k2_arr * a)
+    p_arr = 2.0 / kappa * np.sqrt(k2_arr - alpha**2)
+    q_arr = 2.0 / kappa * np.sqrt(k2_arr * a)
 
     data_bz_seehafer = mirror_magnetogram(
         data_bz, xmin, xmax, ymin, ymax, nresol_x, nresol_y

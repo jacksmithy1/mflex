@@ -224,7 +224,7 @@ def read_fits_soar(path: str, L: np.float64, header: bool = False) -> DataBz:
     ymax_Mm = nresol_y * pixelsize_Mm
     pixelsize_z_Mm = 90.0 * 10**-3
 
-    zmax_Mm = 10000.0 * 10**-3
+    zmax_Mm = 20000.0 * 10**-3
 
     xmin = 0.0  # Minimum value of x in data length scale, not in Mm
     ymin = 0.0  # Minimum value of y in data length scale, not in Mm
