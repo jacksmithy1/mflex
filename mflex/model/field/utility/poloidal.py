@@ -3,8 +3,10 @@
 import numpy as np
 from scipy.special import jv
 from scipy.special import gamma, hyp2f1
+from numba import njit
 
 
+@njit
 def phi(
     z: np.float64, p: np.float64, q: np.float64, z0: np.float64, deltaz: np.float64
 ) -> np.float64:
@@ -28,6 +30,7 @@ def phi(
         return np.exp(-2.0 * rminus * (z - z0)) / d
 
 
+@njit
 def dphidz(
     z: np.float64, p: np.float64, q: np.float64, z0: np.float64, deltaz: np.float64
 ) -> np.float64:
@@ -54,6 +57,7 @@ def dphidz(
         return -2.0 * rminus * np.exp(-2.0 * rminus * (z - z0)) / d
 
 
+# @njit
 def phi_low(
     z: np.float64, p: np.float64, q: np.float64, kappa: np.float64
 ) -> np.float64:
@@ -61,10 +65,10 @@ def phi_low(
     Returns poloidal component of magnetic field vector using
     height profile by Low (1991, 1992).
     """
-
     return jv(p, q * np.exp(-z * kappa / 2.0)) / jv(p, q)
 
 
+# 0@njit
 def dphidz_low(
     z: np.float64, p: np.float64, q: np.float64, kappa: np.float64
 ) -> np.float64:
@@ -84,6 +88,7 @@ def dphidz_low(
     )
 
 
+# @njit
 def phi_hypgeo(z, p, q, z0, deltaz):
     w = (z - z0) / deltaz
     eta_d = 1.0 / (1.0 + np.exp(2.0 * w))
@@ -137,6 +142,7 @@ def phi_hypgeo(z, p, q, z0, deltaz):
     return phi / phi0
 
 
+# @njit
 def dphidz_hypgeo(z, p, q, z0, deltaz):
     w = (z - z0) / deltaz
     eta_d = 1.0 / (1.0 + np.exp(2.0 * w))

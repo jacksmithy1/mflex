@@ -127,7 +127,7 @@ def dalmatian(x: np.float64, y: np.float64) -> np.float64:
     yy = np.pi * (y - 1.0)
     mu_x = 1.0
     mu_y = -mu_x
-    kappa_x = 20.0
+    kappa_x = 10.0
     kappa_y = kappa_x
     mu_x1 = mu_x
     mu_y1 = mu_y
