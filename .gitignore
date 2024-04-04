@@ -110,9 +110,6 @@ x.py
 run.py
 test_vectorised.py
 
-*.ipynb
-
-
 # data folders
 psa*
 *.npy
